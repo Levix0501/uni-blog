@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Setting {
+  id         String   @id @unique @default(cuid())
+  key        String   @unique
+  value      String?  @db.Text
+  createTime DateTime
+  updateTime DateTime
+}
+
+enum StorageType {
+  local // 本地存储
+  cos // 腾讯云 COS
+}
+
+model Image {
+  id          String       @id @unique @default(cuid())
+  sign        String       @unique
+  suffix      String
+  url         String
+  width       Int
+  height      Int
+  storageType StorageType
+  createTime  DateTime
+  updateTime  DateTime
+  Post        Post[]
+  SideNotice  SideNotice[]
+}
+
+enum PostStatus {
+  draft
+  published
+}
+
+model Post {
+  id       Int      @id @unique @default(autoincrement())
+  category Category @relation(fields: [categoryId], references: [id])
+  title    String
+  abstract String   @db.Text
+  content  String   @db.LongText
+  cover    Image?   @relation(fields: [imageId], references: [id])
+
+  slug     String? @unique
+  keywords String? @db.Text
+
+  status     PostStatus
+  createTime DateTime
+  updateTime DateTime
+
+  categoryId String
+  imageId    String?
+}
+
+enum CategoryStatus {
+  draft
+  published
+}
+
+model Category {
+  id         String         @id @unique @default(cuid())
+  slug       String         @unique
+  name       String
+  order      Int
+  status     CategoryStatus
+  createTime DateTime
+  updateTime DateTime
+  Post       Post[]
+}
+
+enum SideNoticeStatus {
+  draft
+  published
+}
+
+enum SideNoticeOrientation {
+  vertical
+  horizontal
+}
+
+model SideNotice {
+  id          String                 @id @unique @default(cuid())
+  name        String
+  desc        String                 @db.Text
+  image       Image?                 @relation(fields: [imageId], references: [id])
+  imageId     String?
+  order       Int?
+  status      SideNoticeStatus
+  orientation SideNoticeOrientation?
+  createTime  DateTime
+  updateTime  DateTime
+}

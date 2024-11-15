@@ -1,0 +1,27 @@
+{$DOMAIN} { 
+    tls {$EMAIL}
+    redir https://www.{$DOMAIN}{uri} 301
+}
+
+www.{$DOMAIN} {
+    tls {$EMAIL}
+
+    root * /app
+
+    rewrite /_uni /_uni/
+
+    @app {
+        not path /_uni/*
+    }   
+    reverse_proxy @app 127.0.0.1:3000 {
+        header_up Origin https://www.{$DOMAIN}
+    }
+
+    file_server
+}
+
+http://localhost {
+    root * /app
+    rewrite /_uni /_uni/
+    file_server
+}
