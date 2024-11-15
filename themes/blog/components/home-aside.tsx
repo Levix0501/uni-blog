@@ -105,7 +105,7 @@ const HomeAside = ({ sideNotices, basicInfo }: HomeAsideProps) => {
 
 						<div className="col-span-2 text-slate-600 dark:text-slate-300">
 							<a
-								href=""
+								href="https://github.com/Levix0501/uni-blog"
 								className="font-medium text-slate-500 dark:text-slate-400 hover:underline"
 							>
 								Powered by UniBlog
