@@ -18,7 +18,11 @@ export interface PostPageProps {
 
 const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
 	let post = await db.post.findUnique({
-		where: { slug: postSlugOrId, category: { slug: category } },
+		where: {
+			slug: postSlugOrId,
+			category: { slug: category },
+			status: 'published'
+		},
 		include: { cover: true }
 	});
 	if (!post && Number.isInteger(Number(postSlugOrId))) {

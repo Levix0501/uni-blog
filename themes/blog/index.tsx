@@ -25,6 +25,7 @@ const Page = async ({ slug }: PageProps) => {
 
 	const [posts, total] = await Promise.all([
 		db.post.findMany({
+			where: { status: 'published' },
 			skip: (page - 1) * 10,
 			take: size,
 			orderBy: { createTime: 'desc' },
