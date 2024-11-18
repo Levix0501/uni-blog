@@ -1,10 +1,12 @@
-import { getBasicInfoApi } from '@/apis/setting';
+import { getBasicInfoApi, SettingApi } from '@/apis/setting';
 import Link from 'next/link';
 import Logo from './logo';
 
-export const HeaderBar = async () => {
-	const basicInfo = await getBasicInfoApi();
+export interface HeaderBarProps {
+	basicInfo: SettingApi.GetBasicInfoResult;
+}
 
+export const HeaderBar = async ({ basicInfo }: HeaderBarProps) => {
 	return (
 		<header className="sticky top-0 z-50 pl-6 pr-1 sm:px-6 h-16 shadow-[inset_0_-1px_0_0] shadow-[#eaeaea] bg-[hsla(0,0%,100%,.8)] backdrop-saturate-[180%] backdrop-blur-[5px]">
 			<nav className="w-full h-full flex justify-between items-center max-w-[1400px]">

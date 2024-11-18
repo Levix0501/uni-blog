@@ -13,6 +13,7 @@ const HomePagination = ({ total, page }: HomePaginationProps) => {
 
 	return (
 		<Pagination
+			className="pb-12"
 			total={total}
 			page={page}
 			onChange={(page) => router.replace(`/${page}`)}
