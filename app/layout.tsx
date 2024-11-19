@@ -32,9 +32,11 @@ export default function RootLayout({
 				<BaiduAnalytics />
 			</head>
 			<body className={inter.className}>
-				<Providers>{children}</Providers>
-				<NprogressBar />
-				<Toaster richColors />
+				<Providers>
+					{children}
+					<NprogressBar />
+					<Toaster richColors />
+				</Providers>
 			</body>
 			<GoogleAnalytics />
 		</html>
