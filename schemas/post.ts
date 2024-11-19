@@ -1,3 +1,4 @@
+import { PostStatus } from '@prisma/client';
 import { z } from 'zod';
 
 export const UpsertPostSchema = z.object({
@@ -8,5 +9,9 @@ export const UpsertPostSchema = z.object({
 	content: z.string().min(1, { message: '内容不可为空！' }),
 	imageId: z.string().optional(),
 	slug: z.string().optional(),
-	keywords: z.string().optional()
+	keywords: z.string().optional(),
+	status: z.enum<PostStatus, [PostStatus, ...PostStatus[]]>([
+		'draft',
+		'published'
+	])
 });

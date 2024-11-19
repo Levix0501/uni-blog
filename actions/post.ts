@@ -10,7 +10,7 @@ export const fetchPostsAction = async ({ page = 1, size = 20 }) =>
 			skip: (page - 1) * size,
 			take: size,
 			orderBy: { createTime: 'desc' },
-			include: { cover: true }
+			include: { cover: true, category: true }
 		}),
 		db.post.count()
 	]);
@@ -27,7 +27,8 @@ export const upsertPostAction = async ({
 	imageId,
 	keywords,
 	slug,
-	id
+	id,
+	status
 }: UpsertPostType) => {
 	const result = id && (await db.post.findUnique({ where: { id } }));
 
@@ -42,6 +43,7 @@ export const upsertPostAction = async ({
 				imageId,
 				keywords,
 				slug,
+				status,
 				updateTime: dayjs().toISOString()
 			}
 		});
@@ -52,7 +54,7 @@ export const upsertPostAction = async ({
 				cover: { connect: { id: imageId } },
 				createTime: dayjs().toISOString(),
 				updateTime: dayjs().toISOString(),
-				status: 'published',
+				status,
 				abstract,
 				content,
 				title,

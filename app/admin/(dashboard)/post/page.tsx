@@ -2,11 +2,12 @@
 
 import { deletePostAction, fetchPostsAction } from '@/actions/post';
 import { Button } from '@/components/ui/button';
-import { Post } from '@prisma/client';
+import { Category, Post } from '@prisma/client';
 import {
 	Button as AntdButton,
 	Popconfirm,
 	Space,
+	Switch,
 	Table,
 	TablePaginationConfig,
 	TableProps,
@@ -35,6 +36,7 @@ const Page = () => {
 			}
 		}
 	);
+	console.log(data);
 
 	const [isPending, startTransition] = useTransition();
 
@@ -51,14 +53,22 @@ const Page = () => {
 		});
 	};
 
-	const columns: TableProps<Post>['columns'] = [
+	const columns: TableProps<Post & { category: Category }>['columns'] = [
 		{
 			dataIndex: 'id',
 			title: 'ID'
 		},
 		{
 			dataIndex: 'title',
-			title: '标题'
+			title: '标题',
+			render: (_, record) => (
+				<a
+					href={`/${record.category.slug}/${record.slug || record.id}`}
+					target="_blank"
+				>
+					{record.title}
+				</a>
+			)
 		},
 		{
 			dataIndex: 'order',

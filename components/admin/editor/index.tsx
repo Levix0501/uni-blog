@@ -1,6 +1,5 @@
 'use client';
 
-import PublishSheet from '@/components/admin/editor/publish-sheet';
 import { Input, InputProps } from '@/components/ui/input';
 import { Editor } from '@bytemd/react';
 import { Post } from '@prisma/client';
@@ -10,22 +9,22 @@ import { useDebounce, useLocalStorage } from 'react-use';
 import { zh_hans } from './locales';
 
 import { getAllPublishedCategoriesAction } from '@/actions/category';
+import { upsertPostAction } from '@/actions/post';
+import { getImageUrl } from '@/lib/utils';
 import { UpsertPostSchema } from '@/schemas/post';
 import { UpsertPostType } from '@/types/post';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image as ImageType } from '@prisma/client';
 import { Spin, UploadFile } from 'antd';
 import 'bytemd/dist/index.css';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import useSWR from 'swr';
 import { z } from 'zod';
-import PostForm from './post-form';
 import './styles/github-markdown.css';
 import './styles/index.scss';
-import { upsertPostAction } from '@/actions/post';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { getImageUrl } from '@/lib/utils';
+import PublishFormSheet from './publish-form-sheet';
 
 const plugins = [
 	// Add more plugins here
@@ -67,7 +66,8 @@ const MDEditor = ({ post }: MDEditorProps) => {
 			content: post?.content || '',
 			imageId: post?.imageId || '',
 			slug: post?.slug || '',
-			keywords: post?.keywords || ''
+			keywords: post?.keywords || '',
+			status: post?.status || 'published'
 		}
 	});
 	const [fileList, setFileList] = useState<UploadFile[]>(
@@ -107,16 +107,15 @@ const MDEditor = ({ post }: MDEditorProps) => {
 					defaultValue={post?.title}
 					onChange={handleTitleChange}
 				/>
-				<PublishSheet type={post ? 'update' : 'create'}>
-					<PostForm
-						form={form}
-						categoryData={categoryData}
-						isLoadingCategories={isLoadingCategories}
-						fileList={fileList}
-						setFileList={setFileList}
-						onSubmit={onSubmit}
-					/>
-				</PublishSheet>
+				<PublishFormSheet
+					form={form}
+					categoryData={categoryData}
+					isLoadingCategories={isLoadingCategories}
+					fileList={fileList}
+					setFileList={setFileList}
+					onSubmit={onSubmit}
+					isUpdate={!!post}
+				/>
 			</header>
 			<div className="flex flex-col">
 				<Editor
