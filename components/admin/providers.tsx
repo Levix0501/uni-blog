@@ -12,11 +12,9 @@ interface Props {
 const Providers = ({ children }: Props) => {
 	return (
 		<SessionProvider>
-			<SettingsProvider>
-				<AntdProvider>
-					<AdminNavProvider>{children}</AdminNavProvider>
-				</AntdProvider>
-			</SettingsProvider>
+			<AntdProvider>
+				<AdminNavProvider>{children}</AdminNavProvider>
+			</AntdProvider>
 		</SessionProvider>
 	);
 };

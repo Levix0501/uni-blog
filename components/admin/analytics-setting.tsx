@@ -25,22 +25,21 @@ import {
 	FormMessage
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { AnalyticsSetting as AnalyticsSettingType } from '@prisma/client';
 
 export interface AnalyticsSettingProps {
-	defaultValues: z.infer<typeof AnalyticsSettingSchema>;
+	defaultValues: AnalyticsSettingType | null;
 }
 
-const AnalyticsSetting = ({
-	defaultValues: { gaId, bdtj }
-}: AnalyticsSettingProps) => {
+const AnalyticsSetting = ({ defaultValues }: AnalyticsSettingProps) => {
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | undefined>('');
 
 	const form = useForm<z.infer<typeof AnalyticsSettingSchema>>({
 		resolver: zodResolver(AnalyticsSettingSchema),
 		defaultValues: {
-			gaId: gaId || '',
-			bdtj: bdtj || ''
+			gaId: defaultValues?.gaId || '',
+			bdtj: defaultValues?.bdtj || ''
 		}
 	});
 

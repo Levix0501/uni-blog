@@ -1,10 +1,13 @@
-import { getBasicInfoApi } from '@/apis/setting';
+import { getSiteSettingApi } from '@/apis/setting';
 import DashboardLayout from '@/components/admin/dashboard-layout';
 import { ChildrenType } from '@/types/common';
 
 const Layout = async ({ children }: ChildrenType) => {
-	const basicInfo = await getBasicInfoApi();
-	return <DashboardLayout basicInfo={basicInfo}>{children}</DashboardLayout>;
+	const siteSetting = await getSiteSettingApi();
+
+	return (
+		<DashboardLayout siteSetting={siteSetting}>{children}</DashboardLayout>
+	);
 };
 
 export default Layout;

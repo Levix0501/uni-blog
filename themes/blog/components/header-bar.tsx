@@ -1,21 +1,20 @@
-import { getBasicInfoApi, SettingApi } from '@/apis/setting';
+'use client';
+
 import Link from 'next/link';
 import Logo from './logo';
 import { ModeToggle } from './mode-toggle';
+import { useSettings } from '@/hooks/use-settings';
 
-export interface HeaderBarProps {
-	basicInfo: SettingApi.GetBasicInfoResult;
-}
-
-export const HeaderBar = async ({ basicInfo }: HeaderBarProps) => {
+export const HeaderBar = () => {
+	const { siteSetting } = useSettings();
 	return (
-		<header className="sticky top-0 z-50 pl-6 pr-1 sm:px-6 h-16 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
-			<nav className="w-full h-full flex justify-between items-center max-w-[1400px]">
+		<header className="sticky top-0 z-50 px-4 sm:px-6 h-16 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
+			<nav className="w-full h-full flex justify-between items-center">
 				<Link href="/">
 					<div className="flex items-center space-x-2">
-						<Logo basicInfo={basicInfo} />
+						<Logo />
 						<p className="font-semibold text-foreground">
-							{basicInfo.siteName || 'Uni Blog'}
+							{siteSetting?.siteName || 'Uni Blog'}
 						</p>
 					</div>
 				</Link>

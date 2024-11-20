@@ -1,22 +1,19 @@
 'use client';
 
-import { ReactNode } from 'react';
-
 import HeaderBar from '@/components/admin/header-bar';
 
+import { getSiteSettingApi } from '@/apis/setting';
+import { ChildrenType } from '@/types/common';
 import VerticalNav from './nav';
-import { BasicInfoType } from '@/types/site-config';
 
-const DashboardLayout = ({
-	children,
-	basicInfo
-}: {
-	children: ReactNode;
-	basicInfo: BasicInfoType;
-}) => {
+export interface DashboardLayoutProps extends ChildrenType {
+	siteSetting: Awaited<ReturnType<typeof getSiteSettingApi>>;
+}
+
+const DashboardLayout = ({ children, siteSetting }: DashboardLayoutProps) => {
 	return (
 		<div className="flex">
-			<VerticalNav basicInfo={basicInfo} />
+			<VerticalNav siteSetting={siteSetting} />
 
 			<div className="flex-1">
 				<HeaderBar />

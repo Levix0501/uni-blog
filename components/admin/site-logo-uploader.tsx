@@ -19,6 +19,7 @@ const SiteLogoUploader = ({
 	const [loading, setLoading] = useState(false);
 
 	const handleChange: UploadProps['onChange'] = (e) => {
+		console.log(e);
 		if (e.file.status === 'uploading') {
 			setLoading(true);
 			return;
@@ -26,7 +27,7 @@ const SiteLogoUploader = ({
 
 		if (e.file.status === 'done') {
 			setLoading(false);
-			onChange(getImageUrl(e.file.response.data));
+			onChange(e.file.response.data.id);
 		}
 	};
 

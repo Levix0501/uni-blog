@@ -4,35 +4,37 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../styles/globals.css';
 import { Toaster } from '@/components/ui/sonner';
-import { getBasicInfoApi } from '@/apis/setting';
+import { getSiteSettingApi } from '@/apis/setting';
 import { Providers } from './providers';
 import BaiduAnalytics from '@/components/baidu-analytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export async function generateMetadata(): Promise<Metadata> {
-	const basicInfo = await getBasicInfoApi();
+	const siteSetting = await getSiteSettingApi();
 
 	return {
-		title: basicInfo.siteName,
-		description: basicInfo.description,
-		keywords: basicInfo.keywords,
-		icons: [{ url: basicInfo.logo || '/logo.svg' }]
+		title: siteSetting?.siteName,
+		description: siteSetting?.description,
+		keywords: siteSetting?.keywords,
+		icons: [{ url: siteSetting?.logo?.url || '/logo.svg' }]
 	};
 }
 
-export default function RootLayout({
+export default async function RootLayout({
 	children
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const siteSetting = await getSiteSettingApi();
+
 	return (
 		<html lang="en">
 			<head>
 				<BaiduAnalytics />
 			</head>
 			<body className={inter.className}>
-				<Providers>
+				<Providers siteSetting={siteSetting}>
 					{children}
 					<NprogressBar />
 					<Toaster richColors />

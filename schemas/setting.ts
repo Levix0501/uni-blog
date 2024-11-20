@@ -1,8 +1,8 @@
 import * as z from 'zod';
 
-export const BasicInfoSchema = z.object({
+export const SiteSettingSchema = z.object({
 	siteName: z.string().optional(),
-	logo: z.string().optional(),
+	logoId: z.string().optional(),
 	description: z.string().optional(),
 	keywords: z.string().optional(),
 	year: z.string().optional(),

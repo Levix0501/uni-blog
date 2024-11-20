@@ -3,7 +3,6 @@ import Feed from './components/feed';
 import HomeAside from './components/home-aside';
 import HomePagination from './components/home-pagination';
 import PostPage from './components/post-page';
-import { getBasicInfoApi } from '@/apis/setting';
 
 interface PageProps {
 	slug?: string[];
@@ -40,8 +39,6 @@ const Page = async ({ slug }: PageProps) => {
 		include: { image: true }
 	});
 
-	const basicInfo = await getBasicInfoApi();
-
 	return (
 		<>
 			<div className="lg:col-span-3">
@@ -56,7 +53,7 @@ const Page = async ({ slug }: PageProps) => {
 				<HomePagination total={Math.ceil(total / size)} page={page} />
 			</div>
 
-			<HomeAside sideNotices={sideNotices} basicInfo={basicInfo} />
+			<HomeAside sideNotices={sideNotices} />
 		</>
 	);
 };

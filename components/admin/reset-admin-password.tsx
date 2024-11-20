@@ -23,7 +23,7 @@ import { z } from 'zod';
 import { useState, useTransition } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { resetAdminPasswordAction } from '@/actions/setting';
+import { updateAdminPasswordAction } from '@/actions/setting';
 import { toast } from 'sonner';
 import { logOutAction } from '@/actions/auth';
 
@@ -43,7 +43,7 @@ const ResetAdminPassword = () => {
 		setError('');
 
 		startTransition(() => {
-			resetAdminPasswordAction(values)
+			updateAdminPasswordAction(values)
 				.then((data) => {
 					if (data?.error) {
 						setError(data?.error);

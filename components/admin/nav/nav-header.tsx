@@ -1,18 +1,18 @@
 'use client';
 
-import { useAdminNav } from '@/hooks/use-admin-nav';
-import { cn } from '@/lib/utils';
-import NavCollapseIcon from './nav-collapse-icon';
+import { getSiteSettingApi } from '@/apis/setting';
 import Logo from '@/components/logo';
 import LogoText from '@/components/logo-text';
+import { useAdminNav } from '@/hooks/use-admin-nav';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { BasicInfoType } from '@/types/site-config';
+import NavCollapseIcon from './nav-collapse-icon';
 
 export interface NavHeaderProps {
-	basicInfo: BasicInfoType;
+	siteSetting: Awaited<ReturnType<typeof getSiteSettingApi>>;
 }
 
-const NavHeader = ({ basicInfo }: NavHeaderProps) => {
+const NavHeader = ({ siteSetting }: NavHeaderProps) => {
 	const { isCollapsed, isHovered } = useAdminNav();
 
 	return (
@@ -26,14 +26,14 @@ const NavHeader = ({ basicInfo }: NavHeaderProps) => {
 		>
 			<Link href="/admin">
 				<div className="flex items-center min-h-7">
-					<Logo basicInfo={basicInfo} />
+					<Logo siteSetting={siteSetting} />
 					<LogoText
 						className={
 							isCollapsed && !isHovered
 								? 'opacity-0 ml-0 hidden'
 								: 'opacity-100 ml-3'
 						}
-						basicInfo={basicInfo}
+						siteSetting={siteSetting}
 					/>
 				</div>
 			</Link>

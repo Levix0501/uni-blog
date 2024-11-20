@@ -1,13 +1,13 @@
-import { getAnalyticsSettingApi, getBasicInfoApi } from '@/apis/setting';
+import { getAnalyticsSettingApi, getSiteSettingApi } from '@/apis/setting';
 import AnalyticsSetting from '@/components/admin/analytics-setting';
-import BasicInfo from '@/components/admin/basic-info';
+import SiteSetting from '@/components/admin/site-setting';
 
 const Page = async () => {
-	const basicInfo = await getBasicInfoApi();
+	const siteSetting = await getSiteSettingApi();
 	const analyticsSetting = await getAnalyticsSettingApi();
 	return (
 		<div className="space-y-4">
-			<BasicInfo defaultValues={basicInfo} />
+			<SiteSetting siteSetting={siteSetting} />
 			<AnalyticsSetting defaultValues={analyticsSetting} />
 		</div>
 	);

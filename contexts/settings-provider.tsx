@@ -4,20 +4,26 @@ import { ReactNode, createContext, useEffect, useState } from 'react';
 import { useLocalStorage } from 'react-use';
 
 import { uniConfig } from '@/uni.config';
-import { Settings } from '@/types/settings';
+import { Settings, SiteSettingType } from '@/types/settings';
+import { getSiteSettingApi } from '@/apis/setting';
 
 export type SettingsContextProps = {
+	siteSetting: SiteSettingType;
 	settings: Settings;
 	updateSettings: (settings: Partial<Settings>) => void;
 };
 
 type SettingsProviderProps = {
 	children: ReactNode;
+	siteSetting: SiteSettingType;
 };
 
 export const SettingsContext = createContext<SettingsContextProps | null>(null);
 
-export const SettingsProvider = ({ children }: SettingsProviderProps) => {
+export const SettingsProvider = ({
+	children,
+	siteSetting
+}: SettingsProviderProps) => {
 	const [settings, updateSettingsStorage] = useLocalStorage<Settings>(
 		uniConfig.settingsStorageKey
 	);
@@ -40,7 +46,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	return (
 		<SettingsContext.Provider
-			value={{ settings: settingsState, updateSettings }}
+			value={{ settings: settingsState, updateSettings, siteSetting }}
 		>
 			{children}
 		</SettingsContext.Provider>

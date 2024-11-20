@@ -1,29 +1,26 @@
 'use server';
 
-import { CONSTANT_SETTING_KEY } from '@/constants/setting';
 import { db } from '@/lib/db';
-import { AnalyticsSettingSchema, BasicInfoSchema } from '@/schemas/setting';
+import { AnalyticsSettingSchema, SiteSettingSchema } from '@/schemas/setting';
 import { ResetAdminPasswordSchema } from '@/schemas/setting';
 import { z } from 'zod';
 import { revalidateAllAction } from './revalidate';
 import { uniConfig } from '@/uni.config';
 
-export const updateBasicInfoAction = async (
-	values: z.infer<typeof BasicInfoSchema>
+export const updateSiteSettingAction = async (
+	values: z.infer<typeof SiteSettingSchema>
 ) => {
-	await db.setting.upsert({
+	await db.siteSetting.upsert({
 		create: {
-			key: CONSTANT_SETTING_KEY.basicInfo,
-			value: JSON.stringify(values),
-			createTime: new Date(),
-			updateTime: new Date()
+			...values,
+			logoId: values.logoId || undefined
 		},
 		update: {
-			value: JSON.stringify(values),
-			updateTime: new Date()
+			...values,
+			logoId: values.logoId || undefined
 		},
 		where: {
-			key: CONSTANT_SETTING_KEY.basicInfo
+			id: 1
 		}
 	});
 	revalidateAllAction();
@@ -33,26 +30,22 @@ export const updateBasicInfoAction = async (
 export const updateAnalyticsSettingAction = async (
 	values: z.infer<typeof AnalyticsSettingSchema>
 ) => {
-	await db.setting.upsert({
+	await db.analyticsSetting.upsert({
 		create: {
-			key: CONSTANT_SETTING_KEY.analytics,
-			value: JSON.stringify(values),
-			createTime: new Date(),
-			updateTime: new Date()
+			...values
 		},
 		update: {
-			value: JSON.stringify(values),
-			updateTime: new Date()
+			...values
 		},
 		where: {
-			key: CONSTANT_SETTING_KEY.analytics
+			id: 1
 		}
 	});
 	revalidateAllAction();
 	return { success: '修改成功！' };
 };
 
-export const resetAdminPasswordAction = async (
+export const updateAdminPasswordAction = async (
 	values: z.infer<typeof ResetAdminPasswordSchema>
 ) => {
 	const validatedFields = ResetAdminPasswordSchema.safeParse(values);
@@ -64,31 +57,25 @@ export const resetAdminPasswordAction = async (
 	const { oldPassword, newPassword } = validatedFields.data;
 
 	try {
-		const pwdSetting = await db.setting.findUnique({
-			where: { key: CONSTANT_SETTING_KEY.password }
-		});
+		const adminSetting = await db.adminSetting.findFirst();
 		if (
-			(!pwdSetting && oldPassword !== uniConfig.defaultPassword) ||
-			(pwdSetting && oldPassword !== pwdSetting.value)
+			(!adminSetting && oldPassword !== uniConfig.defaultPassword) ||
+			(adminSetting && oldPassword !== adminSetting.password)
 		) {
 			return { error: '原密码错误！' };
 		}
 
-		if (pwdSetting) {
-			await db.setting.update({
-				where: { key: CONSTANT_SETTING_KEY.password },
+		if (adminSetting) {
+			await db.adminSetting.update({
+				where: { id: 1 },
 				data: {
-					value: newPassword,
-					updateTime: new Date()
+					password: newPassword
 				}
 			});
 		} else {
-			await db.setting.create({
+			await db.adminSetting.create({
 				data: {
-					key: CONSTANT_SETTING_KEY.password,
-					value: newPassword,
-					createTime: new Date(),
-					updateTime: new Date()
+					password: newPassword
 				}
 			});
 		}

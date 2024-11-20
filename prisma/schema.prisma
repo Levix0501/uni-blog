@@ -22,14 +22,36 @@ model Setting {
   updateTime DateTime
 }
 
+model SiteSetting {
+  id          Int     @id @default(1)
+  siteName    String?
+  logo        Image?  @relation(fields: [logoId], references: [id])
+  logoId      String?
+  description String?
+  keywords    String?
+  year        String?
+  icp         String?
+}
+
+model AnalyticsSetting {
+  id   Int     @id @default(1)
+  gaId String?
+  bdtj String?
+}
+
+model AdminSetting {
+  id       Int     @id @default(1)
+  password String?
+}
+
 enum StorageType {
   local // 本地存储
   cos // 腾讯云 COS
 }
 
 model Image {
-  id          String       @id @unique @default(cuid())
-  sign        String       @unique
+  id          String        @id @unique @default(cuid())
+  sign        String        @unique
   suffix      String
   url         String
   width       Int
@@ -39,6 +61,7 @@ model Image {
   updateTime  DateTime
   Post        Post[]
   SideNotice  SideNotice[]
+  SiteSetting SiteSetting[]
 }
 
 enum PostStatus {

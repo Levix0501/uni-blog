@@ -1,19 +1,14 @@
-import { getBasicInfoApi } from '@/apis/setting';
-import { cn } from '@/lib/utils';
-import { SVGAttributes } from 'react';
+import { useSettings } from '@/hooks/use-settings';
 import Image from 'next/image';
-import { BasicInfoType } from '@/types/site-config';
 
-export interface LogoProps {
-	basicInfo: BasicInfoType;
-}
+const Logo = () => {
+	const { siteSetting } = useSettings();
 
-const Logo = async ({ basicInfo }: LogoProps) => {
-	if (basicInfo.logo) {
+	if (siteSetting?.logo) {
 		return (
 			<div className="relative w-6 h-6">
 				<Image
-					src={basicInfo.logo}
+					src={siteSetting?.logo.url}
 					alt="Logo"
 					fill
 					sizes=""

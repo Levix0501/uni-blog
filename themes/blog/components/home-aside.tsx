@@ -11,10 +11,9 @@ import FooterInformation from './footer-information';
 
 export interface HomeAsideProps {
 	sideNotices: (SideNotice & { image: ImageType | null })[];
-	basicInfo: SettingApi.GetBasicInfoResult;
 }
 
-const HomeAside = ({ sideNotices, basicInfo }: HomeAsideProps) => {
+const HomeAside = ({ sideNotices }: HomeAsideProps) => {
 	const [asideRef, { height }] = useMeasure<HTMLElement>();
 	const { height: windowHeight } = useWindowSize();
 	const [isSticky, setIsSticky] = useState(false);
@@ -90,7 +89,7 @@ const HomeAside = ({ sideNotices, basicInfo }: HomeAsideProps) => {
 				))}
 
 				<li className="text-xs">
-					<FooterInformation basicInfo={basicInfo} />
+					<FooterInformation />
 				</li>
 			</ul>
 		</aside>

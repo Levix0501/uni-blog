@@ -1,6 +1,6 @@
 'use client';
 
-import { updateBasicInfoAction } from '@/actions/setting';
+import { updateSiteSettingAction } from '@/actions/setting';
 import {
 	Card,
 	CardContent,
@@ -8,7 +8,7 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/components/ui/card';
-import { BasicInfoSchema } from '@/schemas/setting';
+import { SiteSettingSchema } from '@/schemas/setting';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,34 +27,33 @@ import {
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import SiteLogoUploader from './site-logo-uploader';
+import { getSiteSettingApi } from '@/apis/setting';
 
-export interface BasicInfoProps {
-	defaultValues: z.infer<typeof BasicInfoSchema>;
+export interface SiteSettingProps {
+	siteSetting: Awaited<ReturnType<typeof getSiteSettingApi>>;
 }
 
-const BasicInfo = ({
-	defaultValues: { description, icp, keywords, logo, siteName, year }
-}: BasicInfoProps) => {
+const SiteSetting = ({ siteSetting }: SiteSettingProps) => {
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | undefined>('');
 
-	const form = useForm<z.infer<typeof BasicInfoSchema>>({
-		resolver: zodResolver(BasicInfoSchema),
+	const form = useForm<z.infer<typeof SiteSettingSchema>>({
+		resolver: zodResolver(SiteSettingSchema),
 		defaultValues: {
-			siteName: siteName || '',
-			logo: logo || '',
-			description: description || '',
-			keywords: keywords || '',
-			year: year || '',
-			icp: icp || ''
+			siteName: siteSetting?.siteName || '',
+			logoId: siteSetting?.logo?.id || '',
+			description: siteSetting?.description || '',
+			keywords: siteSetting?.keywords || '',
+			year: siteSetting?.year || '',
+			icp: siteSetting?.icp || ''
 		}
 	});
 
-	const onSubmit = (values: z.infer<typeof BasicInfoSchema>) => {
+	const onSubmit = (values: z.infer<typeof SiteSettingSchema>) => {
 		setError('');
 
 		startTransition(() => {
-			updateBasicInfoAction(values)
+			updateSiteSettingAction(values)
 				.then((data) => {
 					toast.success('修改成功！');
 				})
@@ -62,8 +61,8 @@ const BasicInfo = ({
 		});
 	};
 
-	const handleLogoChange = (url: string) => {
-		form.setValue('logo', url);
+	const handleLogoChange = (imageId: string) => {
+		form.setValue('logoId', imageId);
 	};
 
 	return (
@@ -98,7 +97,7 @@ const BasicInfo = ({
 
 							<FormField
 								control={form.control}
-								name="logo"
+								name="logoId"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>站点 Logo</FormLabel>
@@ -106,13 +105,15 @@ const BasicInfo = ({
 											<div>
 												<SiteLogoUploader
 													defaultFileList={
-														logo
+														siteSetting?.logo
 															? [
 																	{
-																		uid: '-1',
-																		name: 'image.png',
+																		uid: siteSetting?.logo.id,
+																		name:
+																			siteSetting?.logo.sign +
+																			siteSetting?.logo.suffix,
 																		status: 'done',
-																		url: logo
+																		url: siteSetting?.logo.url
 																	}
 																]
 															: []
@@ -216,4 +217,4 @@ const BasicInfo = ({
 	);
 };
 
-export default BasicInfo;
+export default SiteSetting;

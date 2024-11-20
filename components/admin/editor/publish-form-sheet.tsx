@@ -76,7 +76,7 @@ const PublishFormSheet = ({
 				<Button>{isUpdate ? '更新' : '发布'}</Button>
 			</SheetTrigger>
 
-			<SheetContent className="px-0">
+			<SheetContent className="px-0 h-dvh">
 				<SheetHeader className="px-6">
 					<SheetTitle>{isUpdate ? '更新' : '发布'}文章</SheetTitle>
 					<SheetDescription></SheetDescription>
@@ -84,7 +84,7 @@ const PublishFormSheet = ({
 
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
-						<ScrollArea className="h-[calc(100vh-156px)] px-6">
+						<ScrollArea className="h-[calc(100dvh-156px)] px-6">
 							<div className="space-y-8">
 								<FormField
 									control={form.control}

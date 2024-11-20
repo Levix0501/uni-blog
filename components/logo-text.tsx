@@ -1,12 +1,12 @@
+import { getSiteSettingApi } from '@/apis/setting';
 import { cn } from '@/lib/utils';
-import { BasicInfoType } from '@/types/site-config';
 
 export interface LogoTextProps {
 	className?: string;
-	basicInfo: BasicInfoType;
+	siteSetting: Awaited<ReturnType<typeof getSiteSettingApi>>;
 }
 
-const LogoText = ({ className, basicInfo }: LogoTextProps) => {
+const LogoText = ({ className, siteSetting }: LogoTextProps) => {
 	return (
 		<span
 			className={cn(
@@ -14,7 +14,7 @@ const LogoText = ({ className, basicInfo }: LogoTextProps) => {
 				className
 			)}
 		>
-			{basicInfo.siteName || 'UniBlog'}
+			{siteSetting?.siteName || 'UniBlog'}
 		</span>
 	);
 };

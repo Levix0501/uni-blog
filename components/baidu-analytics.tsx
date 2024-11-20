@@ -3,7 +3,7 @@ import Script from 'next/script';
 
 const BaiduAnalytics = async () => {
 	const analyticsSetting = await getAnalyticsSettingApi();
-	const bdtj = analyticsSetting.bdtj;
+	const bdtj = analyticsSetting?.bdtj;
 	return (
 		process.env.NODE_ENV === 'production' &&
 		bdtj && (

@@ -1,19 +1,19 @@
-import { BasicInfoType } from '@/types/site-config';
+import { getSiteSettingApi } from '@/apis/setting';
 import Image from 'next/image';
 
 export interface LogoProps {
-	basicInfo: BasicInfoType;
+	siteSetting: Awaited<ReturnType<typeof getSiteSettingApi>>;
 }
 
-const Logo = ({ basicInfo }: LogoProps) => {
-	if (basicInfo.logo) {
+const Logo = ({ siteSetting }: LogoProps) => {
+	if (siteSetting?.logo) {
 		return (
 			<div className="relative w-9 h-9">
 				<Image
 					src={
-						basicInfo.logo.startsWith('http')
-							? basicInfo.logo
-							: 'http://localhost' + basicInfo.logo
+						siteSetting.logo.url.startsWith('http')
+							? siteSetting.logo.url
+							: 'http://localhost' + siteSetting.logo.url
 					}
 					alt="Logo"
 					fill

@@ -1,19 +1,19 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { useAdminNav } from '@/hooks/use-admin-nav';
-import NavHeader from './nav-header';
-import NavFooter from './nav-footer';
-import Backdrop from './backdrop';
+import { getSiteSettingApi } from '@/apis/setting';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAdminNav } from '@/hooks/use-admin-nav';
+import { cn } from '@/lib/utils';
 import Menu from '../menu';
-import { BasicInfoType } from '@/types/site-config';
+import Backdrop from './backdrop';
+import NavFooter from './nav-footer';
+import NavHeader from './nav-header';
 
 export interface VerticalNavProps {
-	basicInfo: BasicInfoType;
+	siteSetting: Awaited<ReturnType<typeof getSiteSettingApi>>;
 }
 
-const VerticalNav = ({ basicInfo }: VerticalNavProps) => {
+const VerticalNav = ({ siteSetting }: VerticalNavProps) => {
 	const {
 		isCollapsed,
 		isHovered,
@@ -43,7 +43,7 @@ const VerticalNav = ({ basicInfo }: VerticalNavProps) => {
 	return (
 		<aside
 			className={cn(
-				'h-screen z-40 transition-all sticky top-0',
+				'h-dvh z-40 transition-all sticky top-0',
 				isCollapsed ? 'w-[71px]' : 'w-64',
 				(collapsing || expanding) && 'pointer-events-none',
 				isBreakpointReached && 'fixed top-0 -left-64 z-50 m-0',
@@ -60,7 +60,7 @@ const VerticalNav = ({ basicInfo }: VerticalNavProps) => {
 				onMouseLeave={isCollapsed ? handleNavHoverOut : void 0}
 			>
 				<div className="h-full flex flex-col">
-					<NavHeader basicInfo={basicInfo} />
+					<NavHeader siteSetting={siteSetting} />
 
 					<div className="flex-1 overflow-hidden">
 						<ScrollArea className="h-full w-full px-3">
