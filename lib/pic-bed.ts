@@ -27,13 +27,13 @@ export const saveImage = async (file: File) => {
 	}
 
 	const nameArr = file.name.split('.');
-	const typeSuffix = `.${nameArr[nameArr.length - 1]}`;
+	const suffix = `${nameArr[nameArr.length - 1]}`;
 	const metadata = imageSize(buffer);
 	if (!metadata.width || !metadata.height) {
 		throw new Error('图片尺寸获取失败！');
 	}
 
-	const fileName = `${fileMd5}${typeSuffix}`;
+	const fileName = `${fileMd5}.${suffix}`;
 
 	checkOrCreate(STATIC_FOLDER);
 
@@ -43,7 +43,7 @@ export const saveImage = async (file: File) => {
 	const image = await db.image.create({
 		data: {
 			sign: fileMd5,
-			suffix: type[1],
+			suffix,
 			url: fileName,
 			storageType: 'local',
 			width: metadata.width,
@@ -61,10 +61,7 @@ export const deleteImage = async (id: string) => {
 	if (!image) return;
 
 	try {
-		const path = join(
-			STATIC_FOLDER,
-			`${image.sign}.${image.suffix}`
-		);
+		const path = join(STATIC_FOLDER, `${image.sign}.${image.suffix}`);
 		accessSync(path);
 		unlinkSync(path);
 	} catch (error) {

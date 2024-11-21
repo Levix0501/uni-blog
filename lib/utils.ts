@@ -8,9 +8,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export const getImageUrl = (image: Image, isNextImage?: boolean) => {
 	if (image.storageType === 'local') {
-		return isNextImage
-			? `http://caddy/_uni/${image.url}`
-			: `/_uni/${image.url}`;
+		if (isNextImage && image.suffix !== 'svg') {
+			return `http://caddy/_uni/${image.url}`;
+		}
+		return `/_uni/${image.url}`;
 	}
 
 	return image.url;

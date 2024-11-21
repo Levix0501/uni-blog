@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { getSiteSettingApi } from '@/apis/setting';
 import { Providers } from './providers';
 import BaiduAnalytics from '@/components/baidu-analytics';
+import { getImageUrl } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,7 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
 		title: siteSetting?.siteName,
 		description: siteSetting?.description,
 		keywords: siteSetting?.keywords,
-		icons: [{ url: siteSetting?.logo?.url || '/logo.svg' }]
+		icons: [
+			{
+				url:
+					(siteSetting?.logo && getImageUrl(siteSetting?.logo)) || '/logo.svg'
+			}
+		]
 	};
 }
 

@@ -1,4 +1,5 @@
 import { useSettings } from '@/hooks/use-settings';
+import { getImageUrl } from '@/lib/utils';
 import Image from 'next/image';
 
 const Logo = () => {
@@ -8,7 +9,7 @@ const Logo = () => {
 		return (
 			<div className="relative w-6 h-6">
 				<Image
-					src={siteSetting?.logo.url}
+					src={getImageUrl(siteSetting?.logo, true)}
 					alt="Logo"
 					fill
 					sizes=""
