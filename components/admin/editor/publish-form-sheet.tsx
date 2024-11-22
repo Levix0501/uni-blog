@@ -84,8 +84,8 @@ const PublishFormSheet = ({
 
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
-						<ScrollArea className="h-[calc(100dvh-156px)] px-6">
-							<div className="space-y-8">
+						<ScrollArea className="h-[calc(100dvh-156px)] px-3">
+							<div className="space-y-8 px-3 pb-3">
 								<FormField
 									control={form.control}
 									name="status"
