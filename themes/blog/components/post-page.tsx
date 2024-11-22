@@ -10,6 +10,8 @@ import readingTime from 'reading-time';
 import PostBreadcrumb from './breadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
 import CodeFunWrapper from './code-fun-wrapper';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface PostPageProps {
 	category: string;
@@ -37,6 +39,24 @@ const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
 	if (!post) {
 		return notFound();
 	}
+
+	const nextPost = await db.post.findFirst({
+		where: {
+			category: { slug: category },
+			status: 'published',
+			id: { lt: post.id }
+		},
+		orderBy: { id: 'desc' }
+	});
+
+	const previousPost = await db.post.findFirst({
+		where: {
+			category: { slug: category },
+			status: 'published',
+			id: { gt: post.id }
+		},
+		orderBy: { id: 'asc' }
+	});
 
 	const stats = readingTime(post.content);
 
@@ -83,6 +103,28 @@ const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
 						)}
 					</div>
 				</article>
+
+				<div className="mb-8 flex items-center border-t pt-8 dark:border-neutral-800 contrast-more:border-neutral-400 dark:contrast-more:border-neutral-400 print:hidden">
+					{previousPost && (
+						<Link
+							href={`/${category}/${previousPost.slug || previousPost.id}`}
+							className="flex max-w-[50%] items-center gap-1 py-4 text-base font-medium text-gray-600 transition-colors [word-break:break-word] hover:text-primary-600 dark:text-gray-300 md:text-lg pr-4"
+						>
+							<ChevronLeft />
+							{previousPost.title}
+						</Link>
+					)}
+
+					{nextPost && (
+						<Link
+							href={`/${category}/${nextPost.slug || nextPost.id}`}
+							className="flex max-w-[50%] items-center gap-1 py-4 text-base font-medium text-gray-600 transition-colors [word-break:break-word] hover:text-primary-600 dark:text-gray-300 md:text-lg ml-auto pl-4 text-right"
+						>
+							{nextPost.title}
+							<ChevronRight />
+						</Link>
+					)}
+				</div>
 			</div>
 
 			{tocItems && (
