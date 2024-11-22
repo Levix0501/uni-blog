@@ -41,7 +41,7 @@ const ImageGalleryPage = async ({
 
 			<div className="mt-4 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
 				{list.map((e) => (
-					<ImageItem key={e.id} id={e.id} url={getImageUrl(e)} />
+					<ImageItem key={e.id} id={e.id} image={e} />
 				))}
 			</div>
 

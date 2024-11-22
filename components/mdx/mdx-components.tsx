@@ -1,6 +1,7 @@
 import { CopyButton } from './copy-button';
 import { cn } from '@/lib/utils';
 import './highlight.css';
+import Image from 'next/image';
 
 export const mdxComponents = {
 	h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -88,10 +89,34 @@ export const mdxComponents = {
 		className,
 		alt,
 		...props
-	}: React.ImgHTMLAttributes<HTMLImageElement>) => (
-		// eslint-disable-next-line @next/next/no-img-element
-		<img className={cn('rounded-md', className)} alt={alt} {...props} />
-	),
+	}: React.ImgHTMLAttributes<HTMLImageElement>) => {
+		const queryStr = props.src?.split('?')[1];
+		const searchParams = new URLSearchParams(queryStr);
+		const width = Number(searchParams.get('width'));
+		const height = Number(searchParams.get('height'));
+
+		if (Number.isInteger(width) && Number.isInteger(height)) {
+			return (
+				<span
+					className="relative block w-full"
+					style={{ paddingBottom: (height / width) * 100 + '%' }}
+				>
+					<Image
+						alt={alt || ''}
+						src={'http://caddy' + props.src!}
+						fill
+						sizes="100vw"
+						className="object-contain my-0"
+					/>
+				</span>
+			);
+		}
+
+		return (
+			// eslint-disable-next-line @next/next/no-img-element
+			<img className={cn('rounded-md', className)} alt={alt} {...props} />
+		);
+	},
 	hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
 		<hr className="my-4 md:my-8" {...props} />
 	),
@@ -130,7 +155,7 @@ export const mdxComponents = {
 		...props
 	}: React.HTMLAttributes<HTMLPreElement> & { __raw__?: string }) => {
 		return (
-			<div className="relative">
+			<div className="relative my-5">
 				<pre
 					className={cn(
 						'relative mb-4 mt-6 max-h-[500px] overflow-x-auto rounded-lg border bg-zinc-950 py-4 dark:bg-zinc-900 whitespace-pre-wrap',

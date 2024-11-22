@@ -1,7 +1,7 @@
 'use client';
 
 import { Input, InputProps } from '@/components/ui/input';
-import { Editor } from '@bytemd/react';
+import { Editor, EditorProps } from '@bytemd/react';
 import { Post } from '@prisma/client';
 import { useState, useTransition } from 'react';
 import { useDebounce, useLocalStorage } from 'react-use';
@@ -10,7 +10,7 @@ import { zh_hans } from './locales';
 
 import { getAllPublishedCategoriesAction } from '@/actions/category';
 import { upsertPostAction } from '@/actions/post';
-import { getImageUrl } from '@/lib/utils';
+import { getImageSizeQueryStr, getImageUrl } from '@/lib/utils';
 import { UpsertPostSchema } from '@/schemas/post';
 import { UpsertPostType } from '@/types/post';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +25,7 @@ import { z } from 'zod';
 import './styles/github-markdown.css';
 import './styles/index.scss';
 import PublishFormSheet from './publish-form-sheet';
+import { uploadImageAction } from '@/actions/image';
 
 const plugins = [
 	// Add more plugins here
@@ -98,6 +99,25 @@ const MDEditor = ({ post }: MDEditorProps) => {
 		});
 	};
 
+	const uploadImages: EditorProps['uploadImages'] = async (files: File[]) => {
+		const result = await Promise.all(
+			files.map(async (e) => {
+				const formData = new FormData();
+				formData.append('image', files[0]);
+				const result = await uploadImageAction(formData);
+				if (result.success) {
+					return {
+						url:
+							getImageUrl(result.success) + getImageSizeQueryStr(result.success)
+					};
+				} else {
+					return null;
+				}
+			})
+		);
+		return result.filter((e) => !!e);
+	};
+
 	return (
 		<Spin spinning={isPending}>
 			<header className="px-7 h-16 flex items-center">
@@ -125,6 +145,7 @@ const MDEditor = ({ post }: MDEditorProps) => {
 					onChange={(v) => {
 						setValue(v);
 					}}
+					uploadImages={uploadImages}
 				/>
 			</div>
 		</Spin>

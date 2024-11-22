@@ -1,6 +1,6 @@
 'use server';
 
-import { deleteImage } from '@/lib/pic-bed';
+import { deleteImage, saveImage } from '@/lib/pic-bed';
 
 export const deleteImageAction = async (id: string) => {
 	try {
@@ -9,5 +9,15 @@ export const deleteImageAction = async (id: string) => {
 	} catch (error) {
 		console.log(error);
 		return { error: '删除失败！' };
+	}
+};
+
+export const uploadImageAction = async (formData: FormData) => {
+	try {
+		const file = formData.get('image') as File;
+		const result = await saveImage(file);
+		return { success: result };
+	} catch (error) {
+		return { error: '上传失败！' };
 	}
 };

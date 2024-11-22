@@ -7,6 +7,8 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger
 } from '@/components/ui/context-menu';
+import { getImageUrl } from '@/lib/utils';
+import { Image as ImageType } from '@prisma/client';
 import { Image } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -14,10 +16,10 @@ import { useCopyToClipboard } from 'usehooks-ts';
 
 export interface ImageItemProps {
 	id: string;
-	url: string;
+	image: ImageType;
 }
 
-const ImageItem = ({ id, url }: ImageItemProps) => {
+const ImageItem = ({ id, image }: ImageItemProps) => {
 	const pathname = usePathname();
 	const router = useRouter();
 	const [copiedValue, copyFn] = useCopyToClipboard();
@@ -27,7 +29,12 @@ const ImageItem = ({ id, url }: ImageItemProps) => {
 			<ContextMenuTrigger>
 				<div className="w-full pb-[56.25%] relative">
 					<div className="absolute w-full h-full">
-						<Image height="100%" className="mx-auto" src={url} alt="" />
+						<Image
+							height="100%"
+							className="mx-auto"
+							src={getImageUrl(image)}
+							alt=""
+						/>
 					</div>
 				</div>
 			</ContextMenuTrigger>
@@ -38,13 +45,6 @@ const ImageItem = ({ id, url }: ImageItemProps) => {
 					}}
 				>
 					复制 id
-				</ContextMenuItem>
-				<ContextMenuItem
-					onClick={() => {
-						copyFn(`![](${url})`);
-					}}
-				>
-					复制 markdown 链接
 				</ContextMenuItem>
 				<ContextMenuItem
 					onClick={async () => {

@@ -16,3 +16,7 @@ export const getImageUrl = (image: Image, isNextImage?: boolean) => {
 
 	return image.url;
 };
+
+export const getImageSizeQueryStr = (image: Image) => {
+	return `?width=${image.width}&height=${image.height}`;
+};
