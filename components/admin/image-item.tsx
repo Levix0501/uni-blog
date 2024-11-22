@@ -40,6 +40,13 @@ const ImageItem = ({ id, url }: ImageItemProps) => {
 					复制 id
 				</ContextMenuItem>
 				<ContextMenuItem
+					onClick={() => {
+						copyFn(`![](${url})`);
+					}}
+				>
+					复制 markdown 链接
+				</ContextMenuItem>
+				<ContextMenuItem
 					onClick={async () => {
 						const result = await deleteImageAction(id);
 						if (result.success) {
