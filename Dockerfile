@@ -36,7 +36,12 @@ ENV HOSTNAME "0.0.0.0"
 COPY --from=builder /app/.next/standalone ./standalone
 COPY --from=builder /app/.next/static ./standalone/.next/static
 COPY --from=builder /app/public ./standalone/public
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
-CMD npx prisma migrate deploy &&  node ./standalone/server.js
+COPY ./package.json ./
+COPY ./pnpm-lock.yaml ./
+COPY ./prisma ./prisma
+RUN npm config set registry https://registry.npmmirror.com/
+RUN npm install pnpm -g
+RUN pnpm install --filter prisma
+
+CMD pnpm migrate:deploy &&  node ./standalone/server.js

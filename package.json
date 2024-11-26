@@ -9,6 +9,7 @@
 		"lint": "next lint",
 		"push": "dotenv -e .env.local -- prisma db push",
 		"migrate": "dotenv -e .env.local -- prisma migrate dev",
+		"migrate:deploy": "prisma migrate deploy",
 		"generate": "prisma generate",
 		"commit": "git-cz",
 		"release": "standard-version",
