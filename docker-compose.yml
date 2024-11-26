@@ -4,41 +4,41 @@ services:
   uniblog:
     image: ccr.ccs.tencentyun.com/tcb-100013435734-trdg/uni-blog:latest
     environment:
-      DATABASE_URL: mysql://root:root_password@db:3306/uni_blog
+      DATABASE_URL: postgres://postgres:root_password@postgres:5432/uni_blog
       AUTH_SECRET: P1oigOtITzC7WICj+G6L1JN1u3EyrErLRnq0pxPyiJE=
     volumes:
-      - ./volumes/static:/app/_uni 
+      - ./volumes/static:/app/_uni
     depends_on:
-      - db 
-    restart: always 
+      - db
+    restart: always
     ports:
       - '3000:3000'
 
   caddy:
     image: caddy
     ports:
-      - '80:80' 
+      - '80:80'
       - '443:443'
     environment:
       EMAIL: uniblog@example.com
       DOMAIN: example.com
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./volumes/static:/app/_uni 
-      - ./volumes/caddy/data:/data 
+      - ./volumes/static:/app/_uni
+      - ./volumes/caddy/data:/data
       - ./volumes/caddy/config:/config
     restart: always
 
-  db:
-    image: mysql:8.0
-    ports:
-      - '3306:3306'
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     environment:
-      MYSQL_ROOT_PASSWORD: root_password # 设置 root 用户密码
-      MYSQL_DATABASE: uni_blog # 设置数据库名称
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root_password
+      POSTGRES_DB: uni_blog
+    ports:
+      - '5432:5432'
     volumes:
-      - ./volumes/mysql_data:/var/lib/mysql # 持久化数据库数据
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./volumes/postgres_data:/var/lib/postgresql/data
     restart: always # 设置容器自动重启
 
-  

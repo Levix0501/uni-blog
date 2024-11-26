@@ -36,5 +36,6 @@ ENV HOSTNAME "0.0.0.0"
 COPY --from=builder /app/.next/standalone ./standalone
 COPY --from=builder /app/.next/static ./standalone/.next/static
 COPY --from=builder /app/public ./standalone/public
+COPY --from=builder /app/prisma ./prisma
 
-CMD  node ./standalone/server.js
+CMD npx --yes prisma migrate deploy &&  node ./standalone/server.js

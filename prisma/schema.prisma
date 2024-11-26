@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -74,7 +74,7 @@ model Post {
   category Category @relation(fields: [categoryId], references: [id])
   title    String
   abstract String   @db.Text
-  content  String   @db.LongText
+  content  String   @db.Text
   cover    Image?   @relation(fields: [imageId], references: [id])
 
   slug     String? @unique
