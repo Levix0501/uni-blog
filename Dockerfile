@@ -37,11 +37,9 @@ COPY --from=builder /app/.next/standalone ./standalone
 COPY --from=builder /app/.next/static ./standalone/.next/static
 COPY --from=builder /app/public ./standalone/public
 
-COPY ./package.json ./
-COPY ./pnpm-lock.yaml ./
 COPY ./prisma ./prisma
 RUN npm config set registry https://registry.npmmirror.com/
 RUN npm install pnpm -g
-RUN pnpm install --filter prisma
+RUN pnpm install prisma@5
 
-CMD pnpm migrate:deploy &&  node ./standalone/server.js
+CMD pnpm migrate:deploy && node ./standalone/server.js
