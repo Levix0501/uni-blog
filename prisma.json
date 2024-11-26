@@ -1,0 +1,11 @@
+{
+	"name": "uniblog",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"migrate:deploy": "prisma migrate deploy"
+	},
+	"devDependencies": {
+		"prisma": "^5.19.0"
+	}
+}
