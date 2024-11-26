@@ -9,7 +9,7 @@ services:
     volumes:
       - ./volumes/static:/app/_uni
     depends_on:
-      - db
+      - postgres
     restart: always
     ports:
       - '3000:3000'
