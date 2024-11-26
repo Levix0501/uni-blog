@@ -30,7 +30,7 @@ const PostViewCount = ({ postId, shouldInc }: PostViewCountProps) => {
 	);
 
 	useEffect(() => {
-		if (intersection && intersection.isIntersecting && !data) {
+		if (intersection && intersection.isIntersecting && !data && !isMutating) {
 			trigger();
 		}
 	}, [intersection]);
