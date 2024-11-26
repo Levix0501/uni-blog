@@ -64,3 +64,26 @@ export const upsertPostAction = async ({
 		});
 	}
 };
+
+export const fetchPostViewCountAction = async (id: number) => {
+	try {
+		const post = await db.post.findUnique({ where: { id } });
+		return { success: post?.viewCount || 0 };
+	} catch (error) {
+		return { error };
+	}
+};
+
+export const updatePostViewCountAction = async (id: number) => {
+	try {
+		const post = await db.post.update({
+			where: { id },
+			data: {
+				viewCount: { increment: 1 }
+			}
+		});
+		return { success: post?.viewCount || 0 };
+	} catch (error) {
+		return { error };
+	}
+};

@@ -5,13 +5,13 @@ import { db } from '@/lib/db';
 import { getTableOfContents } from '@/lib/toc';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import readingTime from 'reading-time';
 import PostBreadcrumb from './breadcrumb';
-import { Card, CardContent } from '@/components/ui/card';
 import CodeFunWrapper from './code-fun-wrapper';
-import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import PostMetadata from './post-metadata';
 
 export interface PostPageProps {
 	category: string;
@@ -25,7 +25,7 @@ const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
 			category: { slug: category },
 			status: 'published'
 		},
-		include: { cover: true }
+		include: { cover: true, category: true }
 	});
 	if (!post && Number.isInteger(Number(postSlugOrId))) {
 		post = await db.post.findUnique({
@@ -33,7 +33,7 @@ const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
 				id: Number(postSlugOrId),
 				category: { slug: category }
 			},
-			include: { cover: true }
+			include: { cover: true, category: true }
 		});
 	}
 	if (!post) {
@@ -82,16 +82,7 @@ const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
 						{post.title}
 					</h1>
 
-					<div className="mt-4 mb-12 text-gray-500 text-sm">
-						<dl>
-							<dt className="sr-only">Published on</dt>
-							<dd className="">
-								<time dateTime={post.createTime.toLocaleTimeString()}>
-									{dayjs(post.createTime).format('MMMM D, YYYY')}
-								</time>
-							</dd>
-						</dl>
-					</div>
+					<PostMetadata post={post} className="mt-4 mb-12" shouldIncViewCount />
 
 					<div className="prose dark:prose-invert max-w-none">
 						{codeFunPreview ? (

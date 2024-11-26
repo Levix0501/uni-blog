@@ -86,6 +86,8 @@ model Post {
 
   categoryId String
   imageId    String?
+
+  viewCount Int @default(0)
 }
 
 enum CategoryStatus {
