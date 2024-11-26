@@ -37,6 +37,7 @@ COPY --from=builder /app/.next/standalone ./standalone
 COPY --from=builder /app/.next/static ./standalone/.next/static
 COPY --from=builder /app/public ./standalone/public
 
+COPY ./package.json ./
 COPY ./prisma ./prisma
 RUN npm config set registry https://registry.npmmirror.com/
 RUN npm install pnpm -g
