@@ -1,3 +1,6 @@
+import to from '@/lib/await-to';
+import { notFound } from 'next/navigation';
+
 export const ThemeLayout = async ({
 	children
 }: {
@@ -9,13 +12,38 @@ export const ThemeLayout = async ({
 	return <Layout>{children}</Layout>;
 };
 
-interface ThemeHomePageProps {
-	slug?: string[];
-}
-
-export const ThemeHomePage = async ({ slug }: ThemeHomePageProps) => {
+export const ThemeHomePage = async () => {
 	const theme = 'blog';
 	const HomePage = (await import(`./${theme}/index`)).default;
 
-	return <HomePage slug={slug} />;
+	return <HomePage />;
+};
+
+export const ThemePostsPaginationPage = async ({
+	pageNum
+}: {
+	pageNum: number;
+}) => {
+	const theme = 'blog';
+	const [err, res] = await to(import(`./${theme}/posts-pagination-page`));
+
+	if (err) {
+		notFound();
+	}
+
+	const PostsPaginationPage = res.default;
+	return <PostsPaginationPage pageNum={pageNum} />;
+};
+
+export const ThemePostPage = async ({
+	category,
+	post
+}: {
+	category: string;
+	post: string;
+}) => {
+	const theme = 'blog';
+	const PostPage = (await import(`./${theme}/post-page`)).default;
+
+	return <PostPage category={category} post={post} />;
 };

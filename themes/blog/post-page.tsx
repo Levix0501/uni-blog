@@ -4,21 +4,20 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { db } from '@/lib/db';
 import { getTableOfContents } from '@/lib/toc';
 import { cn } from '@/lib/utils';
-import dayjs from 'dayjs';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import readingTime from 'reading-time';
-import PostBreadcrumb from './breadcrumb';
-import CodeFunWrapper from './code-fun-wrapper';
-import PostMetadata from './post-metadata';
+import PostBreadcrumb from './components/breadcrumb';
+import CodeFunWrapper from './components/code-fun-wrapper';
+import PostMetadata from './components/post-metadata';
 
 export interface PostPageProps {
 	category: string;
-	postSlugOrId: string;
+	post: string;
 }
 
-const PostPage = async ({ category, postSlugOrId }: PostPageProps) => {
+const PostPage = async ({ category, post: postSlugOrId }: PostPageProps) => {
 	let post = await db.post.findUnique({
 		where: {
 			slug: postSlugOrId,

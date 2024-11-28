@@ -8,33 +8,30 @@ const FooterInformation = () => {
 	const { siteSetting } = useSettings();
 
 	return (
-		<div className="grid grid-cols-2 gap-y-2">
-			<hr className="my-4 col-span-2 w-full h-px bg-slate-200 dark:border-slate-800" />
-			<div className="col-span-2 text-slate-600 dark:text-slate-300">
+		<div className="text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
+			<p>
 				<a
 					href="https://beian.miit.gov.cn/"
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					<span className="inline-block break-words text-slate-500 dark:text-slate-400">
-						{siteSetting?.icp}
-					</span>
+					{siteSetting?.icp}
 				</a>
-			</div>
-
-			<div className="col-span-2 text-slate-600 dark:text-slate-300">
+			</p>
+			<p>
+				Powered by{' '}
 				<a
 					href="https://github.com/Levix0501/uni-blog"
-					className="font-medium text-slate-500 dark:text-slate-400 hover:underline"
+					className="text-slate-700 hover:text-slate-500 transition-colors dark:text-slate-300 dark:hover:text-slate-400"
+					target="_blank"
 				>
-					Powered by UniBlog
+					UniBlog
 				</a>
-				<span className="inline-block mx-2 font-bold opacity-50">·</span>
-				<span className="inline-block break-words text-slate-500 dark:text-slate-400">
-					© {siteSetting?.year || dayjs().format('YYYY')}{' '}
-					{siteSetting?.siteName || uniConfig.siteName}
-				</span>
-			</div>
+			</p>
+			<p>
+				© {siteSetting?.year || dayjs().format('YYYY')}{' '}
+				{siteSetting?.siteName || uniConfig.siteName}
+			</p>
 		</div>
 	);
 };

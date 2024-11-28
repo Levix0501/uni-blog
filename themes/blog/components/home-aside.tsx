@@ -1,13 +1,10 @@
 'use client';
 
-import { SettingApi } from '@/apis/setting';
 import { cn, getImageUrl } from '@/lib/utils';
 import { Image as ImageType, SideNotice } from '@prisma/client';
-import dayjs from 'dayjs';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useMeasure, useWindowSize } from 'react-use';
-import FooterInformation from './footer-information';
 
 export interface HomeAsideProps {
 	sideNotices: (SideNotice & { image: ImageType | null })[];
@@ -87,10 +84,6 @@ const HomeAside = ({ sideNotices }: HomeAsideProps) => {
 						</div>
 					</li>
 				))}
-
-				<li className="text-xs">
-					<FooterInformation />
-				</li>
 			</ul>
 		</aside>
 	);
