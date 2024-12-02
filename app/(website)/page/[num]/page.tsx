@@ -1,6 +1,6 @@
-import { ThemePostsPaginationPage } from '@/themes';
+import { ThemeAllPostsPage } from '@/themes';
 
-interface PostsPaginationPageProps {
+interface AllPostsPageProps {
 	params: {
 		num: string;
 	};
@@ -10,12 +10,12 @@ export const generateStaticParams = async () => {
 	return [];
 };
 
-const PostsPaginationPage = ({ params: { num } }: PostsPaginationPageProps) => {
+const AllPostsPage = ({ params: { num } }: AllPostsPageProps) => {
 	let pageNum = Number(num);
 	if (!Number.isInteger(pageNum) || pageNum <= 0) {
 		pageNum = 1;
 	}
-	return <ThemePostsPaginationPage pageNum={pageNum} />;
+	return <ThemeAllPostsPage pageNum={pageNum} />;
 };
 
-export default PostsPaginationPage;
+export default AllPostsPage;

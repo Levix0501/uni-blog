@@ -19,20 +19,34 @@ export const ThemeHomePage = async () => {
 	return <HomePage />;
 };
 
-export const ThemePostsPaginationPage = async ({
-	pageNum
-}: {
-	pageNum: number;
-}) => {
+export const ThemeAllPostsPage = async ({ pageNum }: { pageNum: number }) => {
 	const theme = 'blog';
-	const [err, res] = await to(import(`./${theme}/posts-pagination-page`));
+	const [err, res] = await to(import(`./${theme}/all-posts-page`));
 
 	if (err) {
 		notFound();
 	}
 
-	const PostsPaginationPage = res.default;
-	return <PostsPaginationPage pageNum={pageNum} />;
+	const AllPostsPage = res.default;
+	return <AllPostsPage pageNum={pageNum} />;
+};
+
+export const ThemeCategoryPostsPage = async ({
+	pageNum,
+	category
+}: {
+	pageNum: number;
+	category: string;
+}) => {
+	const theme = 'blog';
+	const [err, res] = await to(import(`./${theme}/category-posts-page`));
+
+	if (err) {
+		notFound();
+	}
+
+	const CategoryPostsPage = res.default;
+	return <CategoryPostsPage pageNum={pageNum} category={category} />;
 };
 
 export const ThemePostPage = async ({

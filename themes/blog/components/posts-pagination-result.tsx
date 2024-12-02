@@ -1,19 +1,27 @@
 import { db } from '@/lib/db';
-import Feed from './feed';
-import HomeAside from './home-aside';
-import Pagination from './home-pagination';
 import { notFound } from 'next/navigation';
+import Feed from './feed';
+import Pagination from './home-pagination';
 
 export interface PostsPaginationResultProps {
 	page: number;
+	category?: string;
+	generateHref: (page: number) => string;
 }
 
-const PostsPaginationResult = async ({ page }: PostsPaginationResultProps) => {
+const PostsPaginationResult = async ({
+	page,
+	category,
+	generateHref
+}: PostsPaginationResultProps) => {
 	const size = 10;
 
 	const [posts, total] = await Promise.all([
 		db.post.findMany({
-			where: { status: 'published' },
+			where: {
+				status: 'published',
+				category: category ? { slug: category } : void 0
+			},
 			skip: (page - 1) * 10,
 			take: size,
 			orderBy: { createTime: 'desc' },
@@ -26,27 +34,21 @@ const PostsPaginationResult = async ({ page }: PostsPaginationResultProps) => {
 		notFound();
 	}
 
-	const sideNotices = await db.sideNotice.findMany({
-		take: await db.sideNotice.count({ where: { status: 'published' } }),
-		orderBy: { order: 'asc' },
-		include: { image: true }
-	});
-
 	return (
 		<>
-			<div className="lg:col-span-3">
-				<ul className="divide-y divide-gray-200 dark:divide-slate-200/5">
-					{posts.map((post) => (
-						<li key={post.id} className="py-12">
-							<Feed post={post} />
-						</li>
-					))}
-				</ul>
+			<ul className="divide-y divide-gray-200 dark:divide-slate-200/5">
+				{posts.map((post) => (
+					<li key={post.id} className="py-12">
+						<Feed post={post} />
+					</li>
+				))}
+			</ul>
 
-				<Pagination currentPage={page} totalPages={Math.ceil(total / size)} />
-			</div>
-
-			<HomeAside sideNotices={sideNotices} />
+			<Pagination
+				currentPage={page}
+				totalPages={Math.ceil(total / size)}
+				generateHref={generateHref}
+			/>
 		</>
 	);
 };

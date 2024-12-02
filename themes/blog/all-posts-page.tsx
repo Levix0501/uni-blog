@@ -1,12 +1,12 @@
 import HomeAsideWrapper from './components/home-aside-wrapper';
 import PostsPaginationResult from './components/posts-pagination-result';
 
-const HomePage = () => {
+const Page = ({ pageNum }: { pageNum: number }) => {
 	return (
 		<>
 			<div className="lg:col-span-3">
 				<PostsPaginationResult
-					page={1}
+					page={pageNum}
 					generateHref={(page: number) => `/page/${page}`}
 				/>
 			</div>
@@ -15,4 +15,4 @@ const HomePage = () => {
 	);
 };
 
-export default HomePage;
+export default Page;

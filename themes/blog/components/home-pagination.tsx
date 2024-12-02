@@ -10,13 +10,16 @@ import { PaginationItemType, usePagination } from '@/hooks/use-pagination';
 export interface HomePaginationProps {
 	currentPage: number;
 	totalPages: number;
+	generateHref: (page: number) => string;
 }
 
-const HomePagination = ({ currentPage, totalPages }: HomePaginationProps) => {
+const HomePagination = ({
+	currentPage,
+	totalPages,
+	generateHref
+}: HomePaginationProps) => {
 	const range = usePagination({ page: currentPage, total: totalPages });
 	const currentIndex = range.findIndex((e) => e === currentPage);
-
-	const generateHref = (page: number) => `/page/${page}`;
 
 	const renderItem = (e: string | number, i: number) => {
 		if (e === PaginationItemType.DOTS) {

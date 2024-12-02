@@ -85,3 +85,9 @@ export const editCategoryAction = async (
 		throw error;
 	}
 };
+
+export const getTotalPostsOfCategoryAction = async (slug: string) => {
+	console.log('getTotalPostsOfCategoryAction');
+	const result = await db.post.count({ where: { category: { slug } } });
+	return result;
+};
