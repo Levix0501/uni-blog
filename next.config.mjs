@@ -10,13 +10,16 @@ const nextConfig = {
 	images: {
 		remotePatterns: [
 			{
+				hostname: '**.myqcloud.com'
+			},
+			{
+				hostname: '**.supabase.co'
+			},
+			{
 				hostname: 'localhost'
 			},
 			{
 				hostname: 'caddy'
-			},
-			{
-				hostname: '**.myqcloud.com'
 			}
 		]
 	}

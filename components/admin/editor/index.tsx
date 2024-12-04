@@ -10,7 +10,7 @@ import { zh_hans } from './locales';
 
 import { getAllPublishedCategoriesAction } from '@/actions/category';
 import { upsertPostAction } from '@/actions/post';
-import { getImageSizeQueryStr, getImageUrl } from '@/lib/utils';
+import { getImageSizeQueryStr } from '@/lib/utils';
 import { UpsertPostSchema } from '@/schemas/post';
 import { UpsertPostType } from '@/types/post';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,13 +26,14 @@ import './styles/github-markdown.css';
 import './styles/index.scss';
 import PublishFormSheet from './publish-form-sheet';
 import { uploadImageAction } from '@/actions/image';
+import { ExtendedImageType } from '@/types/image';
 
 const plugins = [
 	// Add more plugins here
 ];
 
 export interface MDEditorProps {
-	post?: Post & { cover: ImageType | null };
+	post?: Post & { cover: ExtendedImageType | null };
 }
 
 const MDEditor = ({ post }: MDEditorProps) => {
@@ -78,7 +79,7 @@ const MDEditor = ({ post }: MDEditorProps) => {
 						uid: post.cover.id,
 						name: `${post.cover.sign}.${post.cover.suffix}`,
 						status: 'done',
-						url: getImageUrl(post.cover)
+						url: post.cover.imgUrl
 					}
 				]
 			: []
@@ -107,8 +108,7 @@ const MDEditor = ({ post }: MDEditorProps) => {
 				const result = await uploadImageAction(formData);
 				if (result.success) {
 					return {
-						url:
-							getImageUrl(result.success) + getImageSizeQueryStr(result.success)
+						url: result.success.imgUrl + getImageSizeQueryStr(result.success)
 					};
 				} else {
 					return null;

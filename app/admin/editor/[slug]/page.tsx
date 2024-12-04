@@ -1,5 +1,6 @@
 import MDEditor from '@/components/admin/editor';
 import { db } from '@/lib/db';
+import { getImageUrl } from '@/lib/pic-bed';
 import { notFound } from 'next/navigation';
 
 interface EditorEditPageProps {
@@ -21,7 +22,11 @@ const Page = async ({ params: { slug } }: EditorEditPageProps) => {
 		return notFound();
 	}
 
-	return <MDEditor post={post} />;
+	return (
+		<MDEditor
+			post={{ ...post, cover: post.cover ? getImageUrl(post.cover) : null }}
+		/>
+	);
 };
 
 export default Page;

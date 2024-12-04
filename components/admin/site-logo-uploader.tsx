@@ -1,11 +1,8 @@
 'use client';
-import { getImageUrl } from '@/lib/utils';
 import { Spinner } from '@nextui-org/react';
-import { Image as ImageType } from '@prisma/client';
-import { Button, Upload, UploadFile, UploadProps } from 'antd';
-import { Plus, UploadCloud } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { Key, useState } from 'react';
+import { Upload, UploadFile, UploadProps } from 'antd';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 export interface SiteLogoUploaderProps {
 	defaultFileList: UploadFile[];

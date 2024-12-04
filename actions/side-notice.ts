@@ -1,11 +1,12 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { getImageUrl } from '@/lib/pic-bed';
 import { SideNoticeMutationType } from '@/types/side-notice';
 import dayjs from 'dayjs';
 
-export const getSideNoticeListAction = async ({ page = 1, size = 20 }) =>
-	Promise.all([
+export const getSideNoticeListAction = async ({ page = 1, size = 20 }) => {
+	const [list, total] = await Promise.all([
 		db.sideNotice.findMany({
 			skip: (page - 1) * size,
 			take: size,
@@ -14,6 +15,11 @@ export const getSideNoticeListAction = async ({ page = 1, size = 20 }) =>
 		}),
 		db.sideNotice.count()
 	]);
+	return [
+		list.map((e) => ({ ...e, image: e.image ? getImageUrl(e.image) : null })),
+		total
+	] as const;
+};
 
 export const getAllPublishedSideNoticeListAction = async () => {
 	const total = await db.category.count();

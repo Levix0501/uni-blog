@@ -1,7 +1,5 @@
-import { getImageUrl } from '@/lib/utils';
+import { getImageUrl } from '@/lib/pic-bed';
 import { Category, Image as ImageType, Post } from '@prisma/client';
-import dayjs from 'dayjs';
-import { Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import PostMetadata from './post-metadata';
@@ -54,7 +52,7 @@ const Feed = ({ post }: FeedProps) => {
 								>
 									{post.cover && (
 										<Image
-											src={getImageUrl(post.cover, true)}
+											src={getImageUrl(post.cover).nextImageUrl}
 											alt={post.title}
 											fill
 											className="object-cover rounded-xl md:rounded-lg"

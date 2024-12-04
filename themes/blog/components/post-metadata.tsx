@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 import { Category, Image as ImageType, Post } from '@prisma/client';
 import dayjs from 'dayjs';
-import { Eye, LayoutGrid } from 'lucide-react';
-import PostViewCount from './post-view-count';
+import { Eye } from 'lucide-react';
 import Link from 'next/link';
+import PostViewCount from './post-view-count';
 
 export interface PostMetadataProps {
 	post: Post & { cover: ImageType | null } & { category: Category };

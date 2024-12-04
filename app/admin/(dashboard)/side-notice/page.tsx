@@ -12,6 +12,7 @@ import {
 	DialogTitle
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ExtendedImageType } from '@/types/image';
 import { SideNoticeMutationType } from '@/types/side-notice';
 import { Image as ImageType, SideNotice } from '@prisma/client';
 import { Table, TablePaginationConfig, TableProps, Tag } from 'antd';
@@ -44,7 +45,7 @@ const Page = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isAdd, setIsAdd] = useState(false);
 	const [sideNotice, setSideNotice] = useState<
-		SideNotice & { image: ImageType | null }
+		SideNotice & { image: ExtendedImageType | null }
 	>();
 	const [isPending, startTransition] = useTransition();
 
@@ -58,7 +59,9 @@ const Page = () => {
 		setIsOpen(true);
 	};
 
-	const handleEdit = (record: SideNotice & { image: ImageType | null }) => {
+	const handleEdit = (
+		record: SideNotice & { image: ExtendedImageType | null }
+	) => {
 		setSideNotice(record);
 		setIsAdd(false);
 		setIsOpen(true);
@@ -78,7 +81,7 @@ const Page = () => {
 	};
 
 	const columns: TableProps<
-		SideNotice & { image: ImageType | null }
+		SideNotice & { image: ExtendedImageType | null }
 	>['columns'] = [
 		{
 			dataIndex: 'name',

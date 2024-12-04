@@ -7,7 +7,6 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger
 } from '@/components/ui/context-menu';
-import { getImageUrl } from '@/lib/utils';
 import { Image as ImageType } from '@prisma/client';
 import { Image } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,7 +15,7 @@ import { useCopyToClipboard } from 'usehooks-ts';
 
 export interface ImageItemProps {
 	id: string;
-	image: ImageType;
+	image: ImageType & { imgUrl: string; nextImageUrl: string };
 }
 
 const ImageItem = ({ id, image }: ImageItemProps) => {
@@ -32,7 +31,7 @@ const ImageItem = ({ id, image }: ImageItemProps) => {
 						<Image
 							height="100%"
 							className="mx-auto"
-							src={getImageUrl(image)}
+							src={image.imgUrl}
 							alt=""
 						/>
 					</div>

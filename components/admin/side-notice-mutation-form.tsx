@@ -3,8 +3,10 @@ import {
 	editSideNoticeAction
 } from '@/actions/side-notice';
 import { SideNoticeMutationSchema } from '@/schemas/side-notice';
+import { ExtendedImageType } from '@/types/image';
 import { SideNoticeMutationType } from '@/types/side-notice';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Image as ImageType, SideNotice } from '@prisma/client';
 import {
 	Input,
 	InputNumber,
@@ -13,6 +15,7 @@ import {
 	UploadFile,
 	UploadProps
 } from 'antd';
+import { Plus } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -27,12 +30,9 @@ import {
 	FormMessage
 } from '../ui/form';
 import { Textarea } from '../ui/textarea';
-import { Plus } from 'lucide-react';
-import { Image as ImageType, SideNotice } from '@prisma/client';
-import { getImageUrl } from '@/lib/utils';
 
 export interface SideNoticeMutationFormProps {
-	sideNotice?: SideNotice & { image: ImageType | null };
+	sideNotice?: SideNotice & { image: ExtendedImageType | null };
 	onSuccess?: () => void;
 	isAdd: boolean;
 }
@@ -51,7 +51,7 @@ const SideNoticeMutationForm = ({
 						uid: sideNotice.image.id,
 						name: `${sideNotice.image.sign}.${sideNotice.image.suffix}`,
 						status: 'done',
-						url: getImageUrl(sideNotice.image)
+						url: sideNotice.image.imgUrl
 					}
 				]
 			: []

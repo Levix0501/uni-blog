@@ -1,13 +1,16 @@
 'use client';
 
-import { cn, getImageUrl } from '@/lib/utils';
-import { Image as ImageType, SideNotice } from '@prisma/client';
+import { cn } from '@/lib/utils';
+import { ExtendedImageType } from '@/types/image';
+import { SideNotice } from '@prisma/client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useMeasure, useWindowSize } from 'react-use';
 
 export interface HomeAsideProps {
-	sideNotices: (SideNotice & { image: ImageType | null })[];
+	sideNotices: (SideNotice & {
+		image: ExtendedImageType | null;
+	})[];
 }
 
 const HomeAside = ({ sideNotices }: HomeAsideProps) => {
@@ -27,7 +30,7 @@ const HomeAside = ({ sideNotices }: HomeAsideProps) => {
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
 		};
-	}, []);
+	}, [height, windowHeight]);
 
 	return (
 		<aside
@@ -73,7 +76,7 @@ const HomeAside = ({ sideNotices }: HomeAsideProps) => {
 									}}
 								>
 									<Image
-										src={getImageUrl(e.image, true)}
+										src={e.image.nextImageUrl}
 										alt=""
 										fill
 										sizes="288px"

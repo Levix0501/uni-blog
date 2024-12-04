@@ -1,10 +1,9 @@
-import { UploadCloud } from 'lucide-react';
-import { z } from 'zod';
-import { db } from '@/lib/db';
 import ImageItem from '@/components/admin/image-item';
-import Pagination from '@/components/admin/pagination';
 import ImageUploader from '@/components/admin/image-uploader';
-import { getImageUrl } from '@/lib/utils';
+import Pagination from '@/components/admin/pagination';
+import { db } from '@/lib/db';
+import { getImageUrl } from '@/lib/pic-bed';
+import { z } from 'zod';
 
 const ImageGalleryPage = async ({
 	searchParams
@@ -28,11 +27,13 @@ const ImageGalleryPage = async ({
 		? { page: 1, size: 20 }
 		: parsedSearchParams.data;
 
-	const list = await db.image.findMany({
-		skip: (page - 1) * size,
-		take: size,
-		orderBy: { createTime: 'desc' }
-	});
+	const list = (
+		await db.image.findMany({
+			skip: (page - 1) * size,
+			take: size,
+			orderBy: { createTime: 'desc' }
+		})
+	).map(getImageUrl);
 	const total = await db.image.count();
 
 	return (

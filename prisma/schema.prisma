@@ -45,6 +45,7 @@ model AdminSetting {
 }
 
 enum StorageType {
+  supabase // supabase
   local // 本地存储
   cos // 腾讯云 COS
 }
