@@ -43,4 +43,4 @@ RUN npm config set registry https://registry.npmmirror.com/
 RUN npm install pnpm -g
 RUN pnpm install
 
-CMD pnpm migrate:deploy && node ./standalone/server.js
+CMD pnpm db:deploy && node ./standalone/server.js
