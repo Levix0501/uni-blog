@@ -10,11 +10,7 @@ const Logo = ({ siteSetting }: LogoProps) => {
 		return (
 			<div className="relative w-9 h-9">
 				<Image
-					src={
-						siteSetting.logo.url.startsWith('http')
-							? siteSetting.logo.url
-							: 'http://localhost' + siteSetting.logo.url
-					}
+					src={siteSetting.logo.nextImageUrl}
 					alt="Logo"
 					fill
 					sizes=""
