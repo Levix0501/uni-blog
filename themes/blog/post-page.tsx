@@ -83,7 +83,7 @@ const PostPage = async ({ category, post: postSlugOrId }: PostPageProps) => {
 
 					<PostMetadata post={post} className="mt-4 mb-12" shouldIncViewCount />
 
-					<div className="prose dark:prose-invert max-w-none">
+					<div>
 						{codeFunPreview ? (
 							<CodeFunWrapper previewCode={codeFunPreview}>
 								<MdxRemoteServer source={post.content} />

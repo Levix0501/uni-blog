@@ -43,25 +43,27 @@ const Feed = ({ post }: FeedProps) => {
 						<PostMetadata post={post} />
 					</div>
 
-					<div className="mt-5 lg:mt-0 lg:w-[180px] shrink-0">
-						<div className="relative w-full pb-[56.25%]">
-							<div className="absolute inset-0">
-								<Link
-									href={postUrl}
-									className="block w-full h-full overflow-hidden rounded-xl md:rounded-lg focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 focus:dark:ring-offset-slate-800"
-								>
-									{post.cover && (
+					{post.cover && (
+						<div className="mt-5 lg:mt-0 lg:w-[180px] shrink-0">
+							<div className="relative w-full pb-[56.25%]">
+								<div className="absolute inset-0">
+									<Link
+										href={postUrl}
+										className="block w-full h-full overflow-hidden rounded-xl md:rounded-lg focus:outline-none focus:ring focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 focus:dark:ring-offset-slate-800"
+									>
+										(
 										<Image
 											src={getImageUrl(post.cover).nextImageUrl}
 											alt={post.title}
 											fill
 											className="object-cover rounded-xl md:rounded-lg"
 										/>
-									)}
-								</Link>
+										)
+									</Link>
+								</div>
 							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</div>
 		</article>

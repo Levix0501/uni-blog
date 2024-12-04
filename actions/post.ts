@@ -40,7 +40,7 @@ export const upsertPostAction = async ({
 				categoryId,
 				content,
 				title,
-				imageId,
+				imageId: imageId || void 0,
 				keywords,
 				slug,
 				status,
@@ -51,7 +51,7 @@ export const upsertPostAction = async ({
 		await db.post.create({
 			data: {
 				category: { connect: { id: categoryId } },
-				cover: { connect: { id: imageId } },
+				cover: imageId ? { connect: { id: imageId } } : void 0,
 				createTime: dayjs().toISOString(),
 				updateTime: dayjs().toISOString(),
 				status,

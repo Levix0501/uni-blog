@@ -5,16 +5,18 @@ import { Editor, EditorProps } from '@bytemd/react';
 import { Post } from '@prisma/client';
 import { useState, useTransition } from 'react';
 import { useDebounce, useLocalStorage } from 'react-use';
+import removeMd from 'remove-markdown';
 
 import { zh_hans } from './locales';
 
 import { getAllPublishedCategoriesAction } from '@/actions/category';
+import { uploadImageAction } from '@/actions/image';
 import { upsertPostAction } from '@/actions/post';
 import { getImageSizeQueryStr } from '@/lib/utils';
 import { UpsertPostSchema } from '@/schemas/post';
+import { ExtendedImageType } from '@/types/image';
 import { UpsertPostType } from '@/types/post';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Image as ImageType } from '@prisma/client';
 import { Spin, UploadFile } from 'antd';
 import 'bytemd/dist/index.css';
 import { useRouter } from 'next/navigation';
@@ -22,11 +24,9 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { z } from 'zod';
+import PublishFormSheet from './publish-form-sheet';
 import './styles/github-markdown.css';
 import './styles/index.scss';
-import PublishFormSheet from './publish-form-sheet';
-import { uploadImageAction } from '@/actions/image';
-import { ExtendedImageType } from '@/types/image';
 
 const plugins = [
 	// Add more plugins here
@@ -38,15 +38,21 @@ export interface MDEditorProps {
 
 const MDEditor = ({ post }: MDEditorProps) => {
 	const router = useRouter();
-	const [localValue, setLocalValue] = useLocalStorage(
-		post ? `post-${post.id}` : 'post-draft',
-		post ? post.content : ''
-	);
-	const [value, setValue] = useState(localValue || '');
+	const [localValue, setLocalValue] = useLocalStorage('post-draft', '');
+	const [value, setValue] = useState(post?.content || localValue || '');
 	const [, cancel] = useDebounce(
 		() => {
-			setLocalValue(value);
+			if (!post) {
+				setLocalValue(value);
+			}
+
 			form.setValue('content', value);
+			if (!post?.abstract) {
+				form.setValue(
+					'abstract',
+					removeMd(value).replace(/\n+/g, ' ').substring(0, 100)
+				);
+			}
 		},
 		1000,
 		[value]
@@ -95,6 +101,7 @@ const MDEditor = ({ post }: MDEditorProps) => {
 				.then(() => {
 					router.replace('/admin/post');
 					toast.success(post ? '更新成功！' : '发布成功！');
+					setLocalValue('');
 				})
 				.catch(() => toast.error('Something went wrong!'));
 		});

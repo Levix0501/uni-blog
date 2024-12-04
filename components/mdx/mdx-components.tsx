@@ -158,7 +158,7 @@ export const mdxComponents = {
 			<div className="relative my-5">
 				<pre
 					className={cn(
-						'relative mb-4 mt-6 max-h-[500px] overflow-x-auto rounded-lg border bg-zinc-950 py-4 dark:bg-zinc-900 whitespace-pre-wrap',
+						'relative mb-4 mt-6 max-h-[500px] overflow-x-auto rounded-lg border bg-zinc-950 py-4 dark:bg-zinc-900 whitespace-pre-wrap px-4',
 						className
 					)}
 					{...props}
@@ -175,7 +175,7 @@ export const mdxComponents = {
 	code: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
 		<code
 			className={cn(
-				'relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm',
+				'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm',
 				className
 			)}
 			{...props}
