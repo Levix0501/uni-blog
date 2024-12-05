@@ -16,7 +16,6 @@ const SiteLogoUploader = ({
 	const [loading, setLoading] = useState(false);
 
 	const handleChange: UploadProps['onChange'] = (e) => {
-		console.log(e);
 		if (e.file.status === 'uploading') {
 			setLoading(true);
 			return;
@@ -29,7 +28,11 @@ const SiteLogoUploader = ({
 	};
 
 	const uploadButton = (
-		<button style={{ border: 0, background: 'none' }} type="button">
+		<button
+			style={{ border: 0, background: 'none' }}
+			type="button"
+			disabled={loading}
+		>
 			{loading ? <Spinner /> : <Plus />}
 		</button>
 	);
@@ -43,6 +46,7 @@ const SiteLogoUploader = ({
 			maxCount={1}
 			defaultFileList={defaultFileList}
 			onChange={handleChange}
+			disabled={loading}
 		>
 			{uploadButton}
 		</Upload>

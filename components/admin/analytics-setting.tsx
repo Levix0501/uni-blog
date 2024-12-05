@@ -57,12 +57,7 @@ const AnalyticsSetting = ({ defaultValues }: AnalyticsSettingProps) => {
 
 	return (
 		<Card>
-			<CardHeader>
-				<CardTitle>数据统计</CardTitle>
-				<CardDescription></CardDescription>
-			</CardHeader>
-
-			<CardContent>
+			<CardContent className="pt-6">
 				<div className="w-[350px]">
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

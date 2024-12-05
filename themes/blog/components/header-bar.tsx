@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Logo from './logo';
-import { ModeToggle } from './mode-toggle';
+import { ModeToggle } from '@/components/mode-toggle';
 import { useSettings } from '@/hooks/use-settings';
 
 export const HeaderBar = () => {

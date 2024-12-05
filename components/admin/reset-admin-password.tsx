@@ -59,12 +59,7 @@ const ResetAdminPassword = () => {
 
 	return (
 		<Card>
-			<CardHeader>
-				<CardTitle>重置密码</CardTitle>
-				<CardDescription></CardDescription>
-			</CardHeader>
-
-			<CardContent>
+			<CardContent className="pt-6">
 				<div className="w-[350px]">
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
