@@ -15,12 +15,34 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Setting {
-  id         String   @id @unique @default(cuid())
-  key        String   @unique
-  value      String?  @db.Text
-  createTime DateTime
-  updateTime DateTime
+model DocumentModel {
+  // 标识符
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(cuid())
+
+  // 关系字段
+  parentUuid  String?
+  prevUuid    String?
+  siblingUuid String?
+  childUuid   String?
+  level       Int
+
+  // 数据字段
+  title        String
+  content      String  @default("") @db.Text
+  abstract     String  @default("") @db.Text
+  slug         String? @unique
+  keywords     String? @db.Text
+  cover        Image?  @relation(fields: [coverImageId], references: [id])
+  coverImageId String?
+
+  // 元数据字段
+  isFolder    Boolean  @default(false)
+  isPublished Boolean  @default(false)
+  isArchived  Boolean  @default(false)
+  viewCount   Int      @default(0)
+  createTime  DateTime @default(now())
+  updateTime  DateTime @updatedAt
 }
 
 model SiteSetting {
@@ -52,8 +74,8 @@ enum StorageType {
 }
 
 model Image {
-  id          String        @id @unique @default(cuid())
-  sign        String        @unique
+  id          String          @id @default(cuid())
+  sign        String          @unique
   suffix      String
   url         String
   width       Int
@@ -64,6 +86,7 @@ model Image {
   Post        Post[]
   SideNotice  SideNotice[]
   SiteSetting SiteSetting[]
+  Document    DocumentModel[]
 }
 
 enum PostStatus {
@@ -72,7 +95,7 @@ enum PostStatus {
 }
 
 model Post {
-  id       Int      @id @unique @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   category Category @relation(fields: [categoryId], references: [id])
   title    String
   abstract String   @db.Text
@@ -98,7 +121,7 @@ enum CategoryStatus {
 }
 
 model Category {
-  id         String         @id @unique @default(cuid())
+  id         String         @id @default(cuid())
   slug       String         @unique
   name       String
   order      Int
@@ -119,7 +142,7 @@ enum SideNoticeOrientation {
 }
 
 model SideNotice {
-  id          String                 @id @unique @default(cuid())
+  id          String                 @id @default(cuid())
   name        String
   desc        String                 @db.Text
   image       Image?                 @relation(fields: [imageId], references: [id])
