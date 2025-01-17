@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import {
 	ChevronRight,
+	File,
+	Folder,
 	MoreVertical,
 	Plus,
 	TextCursorInput,
@@ -18,6 +20,8 @@ import { CSSProperties, useState } from 'react';
 import { DraggableNodeType, useCatelog } from './context';
 import { EditTitleForm } from './edit-title-form';
 import CreateDropdown from './create-dropdown';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 // import { EditTitleForm } from './edit-title-form';
 
 export interface CatelogItemProps {
@@ -36,46 +40,8 @@ const CatelogItem = ({
 	const [isShowMore, setIsShowMore] = useState(false);
 	const [isShowCreate, setIsShowCreate] = useState(false);
 	const [isEditTitle, setIsEditTitle] = useState(false);
-
+	const router = useRouter();
 	const { archiveDocument, toggleCollapsibleState } = useCatelog();
-	// useSWR(
-	// 	item.isOpen ? getDocumentListKey(item.docId) : null,
-	// 	() => getChildDocumentsAction(item.docId),
-	// 	{
-	// 		onSuccess(data, key, config) {
-	// 			const node = findTreeNode(item.docId);
-
-	// 			if (node) {
-	// 				const newCatelogTreeNodeList = getNewCatelogTreeNodeList(data);
-
-	// 				if (node._children.length) {
-	// 					node._children = newCatelogTreeNodeList;
-	// 				} else {
-	// 					node.children = newCatelogTreeNodeList;
-	// 				}
-	// 			}
-
-	// 			refreshCatelogTree();
-	// 		}
-	// 	}
-	// );
-
-	// const onClick = () => {
-	// 	const node = findTreeNode(item.docId);
-
-	// 	if (node) {
-	// 		node.isOpen = !node.isOpen;
-
-	// 		if (node.isOpen) {
-	// 			node.children = node._children;
-	// 		} else {
-	// 			node._children = node.children;
-	// 			node.children = [];
-	// 		}
-	// 	}
-
-	// 	refreshCatelogTree();
-	// };
 
 	return (
 		<div
@@ -87,7 +53,7 @@ const CatelogItem = ({
 				...dragProvided.draggableProps.style,
 				cursor: 'pointer'
 			}}
-			className="px-2 group"
+			className="px-2 group/item"
 		>
 			<div
 				className={cn(
@@ -97,13 +63,17 @@ const CatelogItem = ({
 						'bg-sidebar-accent text-sidebar-accent-foreground'
 				)}
 				style={{ paddingLeft: 24 * item.level + 'px' }}
+				onClick={() => router.push(`/admin/document/${item.uuid}`)}
 			>
-				<div className="size-6 mr-1">
+				<div className="size-6">
 					{item.childUuid !== null && (
 						<div
 							className="rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 flex items-center justify-center h-full w-full"
 							role="button"
-							onClick={() => toggleCollapsibleState(item.uuid)}
+							onClick={(e) => {
+								e.stopPropagation();
+								toggleCollapsibleState(item.uuid);
+							}}
 						>
 							<ChevronRight
 								className={cn(
@@ -115,6 +85,11 @@ const CatelogItem = ({
 						</div>
 					)}
 				</div>
+
+				<div className="h-6 w-5 mr-1 flex items-center">
+					{item.isFolder ? <Folder size={16} /> : <File size={16} />}
+				</div>
+
 				{isEditTitle ? (
 					<EditTitleForm
 						initialTitle={item.title}
@@ -129,7 +104,7 @@ const CatelogItem = ({
 				{!isEditTitle && (
 					<div
 						className={cn(
-							'w-14 hidden group-hover:block',
+							'w-14 hidden group-hover/item:block',
 							isShowMore && 'block'
 						)}
 					></div>
@@ -138,7 +113,7 @@ const CatelogItem = ({
 				{!isEditTitle && (
 					<div
 						className={cn(
-							'absolute right-3.5 opacity-0 group-hover:opacity-100',
+							'absolute right-3.5 opacity-0 group-hover/item:opacity-100',
 							(isShowMore || isShowCreate) && 'opacity-100'
 						)}
 					>
@@ -211,35 +186,6 @@ const CatelogItem = ({
 				</div>
 			)}
 		</div>
-		// <div
-		// 	{...dragProvided.draggableProps}
-		// 	{...dragProvided.dragHandleProps}
-		// 	ref={dragProvided.innerRef}
-		// 	style={{
-		// 		...style,
-		// 		...dragProvided.draggableProps.style,
-		// 		cursor: 'pointer'
-		// 	}}
-		// >
-		// 	<div
-		// 		className={cn(
-		// 			'h-full px-2 rounded-md text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex items-center border-1.5 border-transparent',
-		// 			Boolean(dragSnapshot.combineTargetFor) && 'border-border',
-		// 			dragSnapshot.isDragging &&
-		// 				'shadow-[0_1px_4px_-2px_rgba(0,0,0,.13),0_2px_8px_0_rgba(0,0,0,.08),0_8px_16px_4px_rgba(0,0,0,.04)] opacity-70'
-		// 		)}
-		// 		style={{ paddingLeft: 24 * item.level + 'px' }}
-		// 	>
-		// 		{item.title}
-		// 	</div>
-		// 	{true && (
-		// 		<div className="absolute w-full bottom-[-5px]">
-		// 			<div className="rounded-[2px] border-t-3 border-r-3 border-b-3 border-transparent border-l-4 border-l-border">
-		// 				<div className="h-[1.5px] bg-border"></div>
-		// 			</div>
-		// 		</div>
-		// 	)}
-		// </div>
 	);
 };
 

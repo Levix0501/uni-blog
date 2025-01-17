@@ -1,6 +1,6 @@
 'use client';
 
-import { Binary, ChevronsUpDown, Home, LogOut } from 'lucide-react';
+import { Binary, ChevronsUpDown, Home, LogOut, Settings } from 'lucide-react';
 
 import { logOutAction } from '@/actions/auth';
 import {
@@ -20,6 +20,7 @@ import {
 import { useSettings } from '@/hooks/use-settings';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export function NavUser() {
 	const { siteSetting } = useSettings();
@@ -68,16 +69,28 @@ export function NavUser() {
 									主站
 								</DropdownMenuItem>
 							</Link>
+
+							<Link href="/" target="_blank">
+								<DropdownMenuItem>
+									<Settings />
+									设置
+								</DropdownMenuItem>
+							</Link>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem
-							onClick={async () => {
-								await logOutAction();
-							}}
-						>
-							<LogOut />
-							Log out
-						</DropdownMenuItem>
+						<div className="flex items-center gap-2">
+							<DropdownMenuItem
+								className="flex-1"
+								onClick={async () => {
+									await logOutAction();
+								}}
+							>
+								<LogOut />
+								Log out
+							</DropdownMenuItem>
+
+							<ModeToggle />
+						</div>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>

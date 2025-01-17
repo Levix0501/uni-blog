@@ -49,6 +49,7 @@ export const removeNode = ({
 export const recursiveUpdateLevel = (
 	uuid: DocumentModel['uuid'] | null,
 	parentLevel: DocumentModel['level'],
+	parentMinReachLevel: number,
 	cache: Map<DocumentModel['uuid'], DraggableNodeType>
 ) => {
 	if (!uuid) return;
@@ -58,12 +59,19 @@ export const recursiveUpdateLevel = (
 	if (!node) return;
 
 	node.level = parentLevel + 1;
+	node.minReachLevel = parentMinReachLevel;
+	node.maxReachLevel = node.childUuid ? node.level + 1 : node.level;
 
 	if (node.siblingUuid) {
-		recursiveUpdateLevel(node.siblingUuid, parentLevel, cache);
+		recursiveUpdateLevel(
+			node.siblingUuid,
+			parentLevel,
+			parentMinReachLevel,
+			cache
+		);
 	}
 
 	if (node.childUuid) {
-		recursiveUpdateLevel(node.childUuid, node.level, cache);
+		recursiveUpdateLevel(node.childUuid, node.level, node.minReachLevel, cache);
 	}
 };

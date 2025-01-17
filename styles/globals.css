@@ -34,7 +34,7 @@
 
 		--radius: 0.5rem;
 
-		--sidebar-background: 0 0% 98%;
+		--sidebar-background: 0 0% 100%;
 
 		--sidebar-foreground: 240 5.3% 26.1%;
 
@@ -94,6 +94,7 @@
 	* {
 		@apply border-border;
 	}
+
 	body {
 		@apply bg-background text-foreground;
 	}

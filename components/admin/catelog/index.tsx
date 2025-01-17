@@ -13,14 +13,17 @@ import {
 	DroppableProvided,
 	DropResult
 } from '@hello-pangea/dnd';
+import { Spinner } from '@nextui-org/react';
 import { Plus } from 'lucide-react';
 import { useRef } from 'react';
 import { FixedSizeList } from 'react-window';
+import { useResizeObserver } from 'usehooks-ts';
 import CloneCatelogItem from './clone-item';
 import { CatelogProvider, useCatelog } from './context';
 import CreateDropdown from './create-dropdown';
 import CatelogItem from './item';
-import { Spinner } from '@nextui-org/react';
+import { useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
 interface CatelogProps {}
 
@@ -44,6 +47,11 @@ const Row = ({ data: items, index, style }: any) => {
 };
 
 const CatelogInner = () => {
+	const ref = useRef<HTMLDivElement>(null);
+	const { height = 0 } = useResizeObserver({
+		ref
+	});
+
 	const {
 		draggableList,
 		isDraggingExpandedGroup,
@@ -140,7 +148,7 @@ const CatelogInner = () => {
 	};
 
 	return (
-		<div className="w-64">
+		<div className="w-full h-full" ref={ref}>
 			<DragDropContext
 				onBeforeDragStart={onBeforeDragStart}
 				onDragStart={onDragStart}
@@ -165,7 +173,7 @@ const CatelogInner = () => {
 				>
 					{(dropProvided: DroppableProvided) => (
 						<FixedSizeList
-							height={360}
+							height={height}
 							itemCount={draggableList.length}
 							itemSize={36}
 							width={256}
@@ -196,22 +204,28 @@ const LoadingMask = () => {
 };
 
 const Catelog = () => {
+	const { open, isMobile } = useSidebar();
+
 	return (
 		<CatelogProvider>
-			<div className="relative w-64">
+			<div className="w-full h-full relative">
 				<LoadingMask />
 
-				<div className="space-y-2">
-					<CreateDropdown
-						trigger={
-							<Button variant="outline" size="icon" className="size-8">
-								<Plus size={16} />
-							</Button>
-						}
-						parentUuid={null}
-					/>
+				<div className="h-full flex flex-col">
+					<div className="p-2">
+						<CreateDropdown
+							trigger={
+								<Button variant="outline" size="icon" className="size-8">
+									<Plus size={16} />
+								</Button>
+							}
+							parentUuid={null}
+						/>
+					</div>
 
-					<CatelogInner />
+					<div className={cn('flex-1', !isMobile && !open && 'hidden')}>
+						<CatelogInner />
+					</div>
 				</div>
 			</div>
 		</CatelogProvider>

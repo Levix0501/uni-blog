@@ -106,6 +106,7 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 			if (node) {
 				cache.current.set(item.uuid, {
 					...node,
+					...item,
 					minReachLevel,
 					maxReachLevel
 				});
@@ -174,37 +175,36 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 	const updateAllCatelogNodes = useDebouncedCallback(() => {
 		console.log('hahaha');
 		const trigger = async () => {
-			const result = await updateAllCatelogNodesAction(
-				Array.from(
-					cache.current
-						.values()
-						.map(
-							({
-								id,
-								childUuid,
-								isArchived,
-								isFolder,
-								level,
-								parentUuid,
-								prevUuid,
-								siblingUuid,
-								title,
-								uuid
-							}) => ({
-								id,
-								childUuid,
-								isArchived,
-								isFolder,
-								level,
-								parentUuid,
-								prevUuid,
-								siblingUuid,
-								title,
-								uuid
-							})
-						)
-				)
+			const nodes: CatelogNodeType[] = [];
+			cache.current.forEach(
+				({
+					id,
+					childUuid,
+					isArchived,
+					isFolder,
+					level,
+					parentUuid,
+					prevUuid,
+					siblingUuid,
+					title,
+					uuid
+				}) => {
+					nodes.push({
+						id,
+						childUuid,
+						isArchived,
+						isFolder,
+						level,
+						parentUuid,
+						prevUuid,
+						siblingUuid,
+						title,
+						uuid
+					});
+				}
 			);
+
+			const result = await updateAllCatelogNodesAction(nodes);
 
 			return result || Array.from(cache.current.values());
 		};
@@ -224,6 +224,7 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 						parentUuid,
 						isFolder
 					});
+
 					setIsCreating(false);
 
 					return result;
@@ -232,10 +233,10 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 					revalidate: false,
 					optimisticData(currentData, displayedData) {
 						if (parentUuid) {
-							const node = cache.current.get(parentUuid);
+							const parentNode = cache.current.get(parentUuid);
 
-							if (node) {
-								node.isOpen = true;
+							if (parentNode) {
+								parentNode.isOpen = true;
 							}
 						}
 
@@ -347,7 +348,7 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 
 			let prevNode: DraggableNodeType | undefined;
 
-			cache.current.values().forEach((e) => {
+			cache.current.forEach((e) => {
 				if (e.parentUuid === parentUuid && !e.siblingUuid && e.uuid !== uuid) {
 					prevNode = e;
 				}
@@ -368,16 +369,23 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 				node.prevUuid = prevNode.uuid;
 				node.parentUuid = prevNode.parentUuid;
 				node.level = prevNode.level;
+				node.minReachLevel = prevNode.minReachLevel;
 			} else if (parentNode) {
 				parentNode.childUuid = uuid;
 				parentNode.isOpen = true;
 				node.prevUuid = parentNode.uuid;
 				node.parentUuid = parentNode.uuid;
 				node.level = parentNode.level + 1;
+				node.minReachLevel = parentNode.minReachLevel;
 			}
 
-			recursiveUpdateLevel(node.childUuid, node.level, cache.current);
-
+			node.maxReachLevel = node.childUuid ? node.level + 1 : node.level;
+			recursiveUpdateLevel(
+				node.childUuid,
+				node.level,
+				node.minReachLevel,
+				cache.current
+			);
 			updateAllCatelogNodes();
 		},
 		[updateAllCatelogNodes]
@@ -399,7 +407,7 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 
 			let firstChildNode: DraggableNodeType | undefined;
 
-			cache.current.values().forEach((e) => {
+			cache.current.forEach((e) => {
 				if (
 					e.parentUuid === parentUuid &&
 					e.prevUuid === parentUuid &&
@@ -423,14 +431,19 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 				}
 			}
 
-			const level = parentNode ? parentNode.level + 1 : 0;
-
 			node.prevUuid = parentUuid;
 			node.parentUuid = parentUuid;
 			node.siblingUuid = firstChildNode?.uuid || null;
-			node.level = level;
+			node.level = parentNode ? parentNode.level + 1 : 0;
+			node.minReachLevel = parentNode ? parentNode.minReachLevel : 0;
+			node.maxReachLevel = node.childUuid ? node.level + 1 : node.level;
 
-			recursiveUpdateLevel(node.childUuid, node.level, cache.current);
+			recursiveUpdateLevel(
+				node.childUuid,
+				node.level,
+				node.minReachLevel,
+				cache.current
+			);
 			updateDraggableList();
 			updateAllCatelogNodes();
 		},
@@ -465,8 +478,15 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 			node.prevUuid = prevUuid;
 			node.parentUuid = prevNode.parentUuid;
 			node.level = prevNode.level;
+			node.minReachLevel = prevNode.minReachLevel;
+			node.maxReachLevel = node.childUuid ? node.level + 1 : node.level;
 
-			recursiveUpdateLevel(node.childUuid, node.level, cache.current);
+			recursiveUpdateLevel(
+				node.childUuid,
+				node.level,
+				node.minReachLevel,
+				cache.current
+			);
 			updateDraggableList();
 			updateAllCatelogNodes();
 		},
@@ -524,16 +544,16 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 						dropNode.dynamicMinReachLevel
 					);
 				}
-
-				updateDraggableList();
 			}
+
+			updateDraggableList();
 		},
 		[updateDraggableList]
 	);
 
 	const dragUpdate: CatelogContextProps['dragUpdate'] = useCallback(
 		(params) => {
-			cache.current.values().forEach((e) => {
+			cache.current.forEach((e) => {
 				e.reachLevel = -1;
 			});
 
@@ -564,6 +584,9 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 			} else {
 				if (dropUuid) {
 					const dropNode = cache.current.get(dropUuid);
+
+					console.log(dropNode?.reachLevel);
+					console.log(dropNode?.level);
 
 					if (dropNode) {
 						if (dropNode.reachLevel === dropNode.level) {
@@ -615,7 +638,7 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 	const updateDropNodeReachLevel: CatelogContextProps['updateDropNodeReachLevel'] =
 		useCallback(
 			({ x, initialLevel }) => {
-				if (currentDropNode.current) {
+				if (currentDropNode.current && x !== 0) {
 					let reachLevel = Math.ceil(x / 12) + initialLevel;
 					reachLevel = Math.max(
 						reachLevel,

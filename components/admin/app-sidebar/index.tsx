@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import DocumentList, { getDocumentListKey } from '../document-list';
 import useSWR from 'swr';
 import { getChildDocumentsAction } from '@/actions/documents';
+import Catelog from '../catelog';
 
 const data = {
 	navMain: [
@@ -53,26 +54,12 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar collapsible="icon" {...props}>
+		<Sidebar collapsible="icon" {...props} className="bg-background">
 			<SidebarHeader>
 				<NavUser />
 			</SidebarHeader>
 			<SidebarContent>
-				{/* <NavCollapsible label="内容" items={data.navMain} /> */}
-				<NavCollapsible label="设置" items={data.navSettings} />
-
-				<SidebarGroup className="gap-2">
-					<AddDocDropdownMenu
-						trigger={
-							<Button variant="outline" size="icon" className="size-8">
-								<Plus size={16} />
-							</Button>
-						}
-					/>
-					{/* <DragDropContext onDragEnd={() => {}}>
-						<DocumentList />
-					</DragDropContext> */}
-				</SidebarGroup>
+				<Catelog />
 			</SidebarContent>
 			<SidebarFooter></SidebarFooter>
 			<SidebarRail />

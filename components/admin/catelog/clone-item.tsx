@@ -32,7 +32,11 @@ const CloneCatelogItem = ({
 				}
 			}
 		}
-	}, [dragProvided.draggableProps.style?.transform]);
+	}, [
+		dragProvided.draggableProps.style?.transform,
+		item.level,
+		updateDropNodeReachLevel
+	]);
 
 	return (
 		<div
