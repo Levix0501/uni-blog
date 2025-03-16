@@ -36,7 +36,7 @@ export default async function RootLayout({
 	const siteSetting = await getSiteSettingApi();
 
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<BaiduAnalytics />
 			</head>

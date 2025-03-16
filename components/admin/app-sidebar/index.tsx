@@ -1,24 +1,17 @@
 'use client';
 
-import { Boxes, ImageIcon, Megaphone, Pen, Plus, Settings } from 'lucide-react';
+import { Boxes, ImageIcon, Megaphone, Pen, Settings } from 'lucide-react';
 import * as React from 'react';
 
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
-	SidebarGroup,
 	SidebarHeader,
 	SidebarRail
 } from '@/components/ui/sidebar';
-import { NavCollapsible } from './nav-collapsible';
-import { NavUser } from './nav-user';
-import AddDocDropdownMenu from '../catelog/create-dropdown';
-import { Button } from '@/components/ui/button';
-import DocumentList, { getDocumentListKey } from '../document-list';
-import useSWR from 'swr';
-import { getChildDocumentsAction } from '@/actions/documents';
 import Catelog from '../catelog';
+import { NavUser } from './nav-user';
 
 const data = {
 	navMain: [

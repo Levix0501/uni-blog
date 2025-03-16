@@ -1,8 +1,8 @@
+import { DraggableNodeType, useCatelogStore } from '@/hooks/use-catelog-store';
 import { cn } from '@/lib/utils';
 import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { ChevronRight } from 'lucide-react';
 import { CSSProperties, useEffect } from 'react';
-import { DraggableNodeType, useCatelog } from './context';
 
 export interface CatelogItemProps {
 	dragProvided: DraggableProvided;
@@ -17,7 +17,9 @@ const CloneCatelogItem = ({
 	item,
 	style
 }: CatelogItemProps) => {
-	const { updateDropNodeReachLevel } = useCatelog();
+	const updateDropNodeReachLevel = useCatelogStore(
+		(state) => state.updateDropNodeReachLevel
+	);
 
 	useEffect(() => {
 		if (dragProvided.draggableProps.style?.transform) {

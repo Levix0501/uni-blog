@@ -1,7 +1,39 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { getImageUrl } from '@/lib/pic-bed';
 import { DocumentModel } from '@prisma/client';
+import { deleteImageAction, uploadImageAction } from './image';
+
+export const generateDataAction = async () => {
+	const allPosts = await db.post.findMany({
+		orderBy: { updateTime: 'asc' }
+	});
+
+	for (let i = 2; i < allPosts.length; i++) {
+		const post = allPosts[i];
+		const newDoc = await db.documentModel.create({
+			data: {
+				title: post.title,
+				level: 0,
+				abstract: post.abstract,
+				content: post.content,
+				coverImageId: post.imageId,
+				createTime: post.createTime,
+				isPublished: true,
+				keywords: post.keywords || '',
+				slug: post.slug!,
+				viewCount: post.viewCount,
+				updateTime: post.updateTime
+			}
+		});
+
+		await appendChildAction({
+			parentUuid: 'cm667vmy400008zvkfzk1lz9p',
+			uuid: newDoc.uuid
+		});
+	}
+};
 
 export type CatelogNodeType = Awaited<
 	ReturnType<typeof getAllCatelogNodesAction>
@@ -23,7 +55,7 @@ export type CatelogNodeType = Awaited<
 // 		}
 // 	});
 
-export const getAllCatelogNodesAction = () =>
+export const getAllCatelogNodesAction = async () =>
 	db.documentModel.findMany({
 		where: { isArchived: false },
 		select: {
@@ -36,6 +68,7 @@ export const getAllCatelogNodesAction = () =>
 			siblingUuid: true,
 			childUuid: true,
 			level: true,
+			slug: true,
 			isArchived: true
 		}
 	});
@@ -162,6 +195,64 @@ export const archiveDocumentAction = async (uuid: DocumentModel['uuid']) => {
 	return getAllCatelogNodesAction();
 };
 
+export const updateDocumentCoverAction = async ({
+	id,
+	formData
+}: {
+	id: DocumentModel['id'];
+	formData: FormData;
+}) => {
+	const result = await uploadImageAction(formData);
+
+	if (result.error) {
+		return { error: result.error };
+	}
+
+	const document = await db.documentModel.findUnique({ where: { id } });
+
+	if (document?.coverImageId) {
+		const result = await deleteImageAction(document.coverImageId);
+
+		if (result.error) {
+			return { error: result.error };
+		}
+	}
+
+	await db.documentModel.update({
+		where: { id },
+		data: {
+			coverImageId: result.success?.id
+		}
+	});
+
+	return { success: await getDocumentAction({ id }) };
+};
+
+export const removeDocumentCoverAction = async ({
+	id
+}: {
+	id: DocumentModel['id'];
+}) => {
+	const document = await db.documentModel.findUnique({ where: { id } });
+
+	if (document?.coverImageId) {
+		const result = await deleteImageAction(document.coverImageId);
+
+		if (result.error) {
+			return { error: result.error };
+		}
+	}
+
+	await db.documentModel.update({
+		where: { id },
+		data: {
+			cover: { disconnect: true }
+		}
+	});
+
+	return { success: await getDocumentAction({ id }) };
+};
+
 export const updateDocumentTitleAction = async ({
 	id,
 	title
@@ -177,6 +268,50 @@ export const updateDocumentTitleAction = async ({
 	await db.documentModel.update({ where: { id }, data: { title } });
 
 	return getAllCatelogNodesAction();
+};
+
+export const updateDocumentSettingsAction = async ({
+	id,
+	slug,
+	abstract,
+	keywords
+}: {
+	id: DocumentModel['id'];
+	slug: DocumentModel['slug'];
+	abstract: DocumentModel['abstract'];
+	keywords: DocumentModel['keywords'];
+}) => {
+	const doc = await db.documentModel.findUnique({ where: { slug } });
+	if (doc && doc.id !== id) {
+		return { error: 'Unique constraint failed on the fields: (`slug`)' };
+	}
+
+	await db.documentModel.update({
+		where: { id },
+		data: {
+			slug,
+			abstract,
+			keywords
+		}
+	});
+};
+
+export const getDocumentAction = async (
+	options:
+		| {
+				slug: DocumentModel['slug'];
+		  }
+		| { uuid: DocumentModel['uuid'] }
+		| { id: DocumentModel['id'] }
+) => {
+	const result = await db.documentModel.findUnique({
+		where: options,
+		include: { cover: true }
+	});
+
+	return result
+		? { ...result, cover: result?.cover ? getImageUrl(result.cover) : null }
+		: result;
 };
 
 const recursiveUpdateLevel = async (
@@ -484,3 +619,35 @@ export const moveAfterAction = async ({
 // 		}
 // 	}
 // };
+
+export const fetchDocViewCountAction = async (id: DocumentModel['id']) => {
+	try {
+		const doc = await db.documentModel.findUnique({ where: { id } });
+		return { success: doc?.viewCount || 0 };
+	} catch (error) {
+		return { error };
+	}
+};
+
+export const updateDocViewCountAction = async (id: DocumentModel['id']) => {
+	try {
+		const doc = await db.documentModel.update({
+			where: { id },
+			data: {
+				viewCount: { increment: 1 }
+			}
+		});
+		return { success: doc?.viewCount || 0 };
+	} catch (error) {
+		return { error };
+	}
+};
+
+export const getTotalDocsByCategoryAction = async (
+	uuid: DocumentModel['uuid']
+) => {
+	const result = await db.documentModel.count({
+		where: { parentUuid: uuid, isPublished: true, isArchived: false }
+	});
+	return result;
+};

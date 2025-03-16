@@ -7,10 +7,10 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { useCatelogStore } from '@/hooks/use-catelog-store';
 import { DocumentModel } from '@prisma/client';
 import { File, Folder } from 'lucide-react';
 import React, { ReactNode } from 'react';
-import { useCatelog } from './context';
 
 export interface CreateDropdownProps {
 	trigger: ReactNode;
@@ -25,7 +25,7 @@ const CreateDropdown = ({
 	isOpen,
 	setIsOpen
 }: CreateDropdownProps) => {
-	const { createDocument } = useCatelog();
+	const createDocument = useCatelogStore((state) => state.createDocument);
 
 	const onCreateFile = (event: React.MouseEvent) => {
 		event.stopPropagation();

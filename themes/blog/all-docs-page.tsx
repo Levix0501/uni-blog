@@ -1,11 +1,11 @@
 import HomeAsideWrapper from './components/home-aside-wrapper';
-import PostsPaginationResult from './components/posts-pagination-result';
+import DocsPaginationResult from './components/docs-pagination-result';
 
 const Page = ({ pageNum }: { pageNum: number }) => {
 	return (
 		<>
 			<div className="lg:col-span-3">
-				<PostsPaginationResult
+				<DocsPaginationResult
 					page={pageNum}
 					generateHref={(page: number) => `/page/${page}`}
 				/>

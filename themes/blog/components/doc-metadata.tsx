@@ -1,46 +1,52 @@
-import { cn } from '@/lib/utils';
-import { Category, Image as ImageType, Post } from '@prisma/client';
 import dayjs from 'dayjs';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
-import PostViewCount from './post-view-count';
+import { DocumentModel, Image as ImageType } from '@prisma/client';
 
-export interface PostMetadataProps {
-	post: Post & { cover: ImageType | null } & { category: Category };
+import { cn } from '@/lib/utils';
+
+import DocViewCount from './doc-view-count';
+
+export interface DocMetadataProps {
+	doc: DocumentModel & { cover: ImageType | null };
+	categoryDoc: DocumentModel | null;
 	className?: string;
 	shouldIncViewCount?: boolean;
 }
 
-const PostMetadata = ({
-	post,
+const DocMetadata = ({
+	doc,
+	categoryDoc,
 	className,
 	shouldIncViewCount
-}: PostMetadataProps) => {
+}: DocMetadataProps) => {
 	return (
 		<div className={cn('flex items-center justify-between', className)}>
 			<dl>
 				<dt className="sr-only">Published on</dt>
 				<dd className="flex flex-wrap items-center gap-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
-					<time dateTime={post.createTime.toLocaleTimeString()}>
-						{dayjs(post.createTime).format('YYYY-MM-DD')}
+					<time dateTime={doc.createTime.toLocaleTimeString()}>
+						{dayjs(doc.createTime).format('YYYY-MM-DD')}
 					</time>
 
 					<span className="text-gray-300 dark:text-gray-700">/</span>
 
 					<div className="flex items-center gap-1">
 						<Eye size={14} />
-						<PostViewCount postId={post.id} shouldInc={shouldIncViewCount} />
+						<DocViewCount docId={doc.id} shouldInc={shouldIncViewCount} />
 					</div>
 
 					<span className="text-gray-300 dark:text-gray-700">/</span>
 
-					<Link href={`/category/${post.category.slug}`}>
-						{post.category.name}
-					</Link>
+					{categoryDoc && (
+						<Link href={`/category/${categoryDoc.slug}`}>
+							{categoryDoc.title}
+						</Link>
+					)}
 				</dd>
 			</dl>
 		</div>
 	);
 };
 
-export default PostMetadata;
+export default DocMetadata;

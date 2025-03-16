@@ -1,7 +1,14 @@
 .bytemd {
-	height: calc(100vh - 4rem);
+	height: calc(100vh - 3rem);
+	border-top: 0;
+	border-left-width: 0;
+	border-right-width: 0;
 
 	ul {
 		list-style-type: disc;
 	}
+}
+
+.bytemd-fullscreen {
+	z-index: 9999;
 }

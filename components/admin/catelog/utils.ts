@@ -1,5 +1,5 @@
+import { DraggableNodeType } from '@/hooks/use-catelog-store';
 import { DocumentModel } from '@prisma/client';
-import { DraggableNodeType } from './context';
 
 export const removeNode = ({
 	uuid,

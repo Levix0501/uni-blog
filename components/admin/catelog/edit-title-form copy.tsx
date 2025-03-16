@@ -3,7 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { DocumentModel } from '@prisma/client';
 import { FormEvent, useState } from 'react';
-import { useCatelogStore } from '@/hooks/use-catelog-store';
+import { useCatelog } from './context';
 
 interface EditTitleFormProps {
 	initialTitle: string;
@@ -17,9 +17,7 @@ export function EditTitleForm({
 	onBlur
 }: EditTitleFormProps) {
 	const [title, setTitle] = useState(initialTitle);
-	const updateDocumentTitle = useCatelogStore(
-		(state) => state.updateDocumentTitle
-	);
+	const { updateDocumentTitle } = useCatelog();
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();

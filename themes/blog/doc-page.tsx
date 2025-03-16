@@ -1,71 +1,79 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import readingTime from 'reading-time';
+
 import MdxRemoteServer from '@/components/mdx/mdx-remote-server';
 import { DashboardTableOfContents } from '@/components/mdx/toc';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { db } from '@/lib/db';
 import { getTableOfContents } from '@/lib/toc';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import readingTime from 'reading-time';
-import PostBreadcrumb from './components/breadcrumb';
-import CodeFunWrapper from './components/code-fun-wrapper';
-import PostMetadata from './components/post-metadata';
 
-export interface PostPageProps {
+import DocBreadcrumb from './components/breadcrumb';
+import CodeFunWrapper from './components/code-fun-wrapper';
+import DocMetadata from './components/doc-metadata';
+
+export interface DocPageProps {
 	category: string;
-	post: string;
+	doc: string;
 }
 
-const PostPage = async ({ category, post: postSlugOrId }: PostPageProps) => {
-	let post = await db.post.findUnique({
-		where: {
-			slug: postSlugOrId,
-			category: { slug: category },
-			status: 'published'
-		},
-		include: { cover: true, category: true }
+const DocPage = async ({
+	category: categorySlug,
+	doc: docSlug
+}: DocPageProps) => {
+	const categoryDoc = await db.documentModel.findUnique({
+		where: { slug: categorySlug }
 	});
-	if (!post && Number.isInteger(Number(postSlugOrId))) {
-		post = await db.post.findUnique({
-			where: {
-				id: Number(postSlugOrId),
-				category: { slug: category }
-			},
-			include: { cover: true, category: true }
-		});
-	}
-	if (!post) {
-		return notFound();
+
+	if (!categoryDoc) {
+		notFound();
 	}
 
-	const nextPost = await db.post.findFirst({
+	const doc = await db.documentModel.findUnique({
 		where: {
-			category: { slug: category },
-			status: 'published',
-			id: { lt: post.id }
+			slug: docSlug,
+			parentUuid: categoryDoc.uuid,
+			isPublished: true,
+			isArchived: false
+		},
+		include: { cover: true }
+	});
+
+	if (!doc) {
+		notFound();
+	}
+
+	const nextDoc = await db.documentModel.findFirst({
+		where: {
+			parentUuid: categoryDoc.uuid,
+			isPublished: true,
+			isArchived: false,
+			id: { lt: doc.id }
 		},
 		orderBy: { id: 'desc' }
 	});
 
-	const previousPost = await db.post.findFirst({
+	const previousDoc = await db.documentModel.findFirst({
 		where: {
-			category: { slug: category },
-			status: 'published',
-			id: { gt: post.id }
+			parentUuid: categoryDoc.uuid,
+			isPublished: true,
+			isArchived: false,
+			id: { gt: doc.id }
 		},
 		orderBy: { id: 'asc' }
 	});
 
-	const stats = readingTime(post.content);
+	const stats = readingTime(doc.content);
 
-	const toc = await getTableOfContents(post.content);
+	const toc = await getTableOfContents(doc.content);
 	const tocItems = Boolean(toc.items && toc.items.length);
 
 	let codeFunPreview = '';
-	if (category === 'code-fun') {
+	if (categorySlug === 'code-fun') {
 		const regex = /(?<=```html)([\s\S]*?)(?=```)/g;
-		const match = post.content.match(regex);
+		const match = doc.content.match(regex);
 		if (match && match.length) {
 			codeFunPreview = match[0];
 		}
@@ -75,42 +83,47 @@ const PostPage = async ({ category, post: postSlugOrId }: PostPageProps) => {
 		<>
 			<div className={cn(tocItems ? 'lg:col-span-3' : 'lg:col-span-4')}>
 				<article className="pt-4">
-					<PostBreadcrumb title={post.title} />
+					<DocBreadcrumb title={doc.title} />
 
 					<h1 className="font-heading mt-2 text-4xl font-bold tracking-tight leading-inherit">
-						{post.title}
+						{doc.title}
 					</h1>
 
-					<PostMetadata post={post} className="mt-4 mb-12" shouldIncViewCount />
+					<DocMetadata
+						doc={doc}
+						categoryDoc={categoryDoc}
+						className="mt-4 mb-12"
+						shouldIncViewCount
+					/>
 
 					<div>
 						{codeFunPreview ? (
 							<CodeFunWrapper previewCode={codeFunPreview}>
-								<MdxRemoteServer source={post.content} />
+								<MdxRemoteServer source={doc.content} />
 							</CodeFunWrapper>
 						) : (
-							<MdxRemoteServer source={post.content} />
+							<MdxRemoteServer source={doc.content} />
 						)}
 					</div>
 				</article>
 
 				<div className="mb-8 flex items-center border-t pt-8 dark:border-neutral-800 contrast-more:border-neutral-400 dark:contrast-more:border-neutral-400 print:hidden">
-					{previousPost && (
+					{previousDoc && (
 						<Link
-							href={`/${category}/${previousPost.slug || previousPost.id}`}
+							href={`/${categorySlug}/${previousDoc.slug}`}
 							className="flex max-w-[50%] items-center gap-1 py-4 text-base font-medium text-gray-600 transition-colors [word-break:break-word] hover:text-primary-600 dark:text-gray-300 md:text-lg pr-4"
 						>
 							<ChevronLeft />
-							{previousPost.title}
+							{previousDoc.title}
 						</Link>
 					)}
 
-					{nextPost && (
+					{nextDoc && (
 						<Link
-							href={`/${category}/${nextPost.slug || nextPost.id}`}
+							href={`/${categorySlug}/${nextDoc.slug}`}
 							className="flex max-w-[50%] items-center gap-1 py-4 text-base font-medium text-gray-600 transition-colors [word-break:break-word] hover:text-primary-600 dark:text-gray-300 md:text-lg ml-auto pl-4 text-right"
 						>
-							{nextPost.title}
+							{nextDoc.title}
 							<ChevronRight />
 						</Link>
 					)}
@@ -132,4 +145,4 @@ const PostPage = async ({ category, post: postSlugOrId }: PostPageProps) => {
 	);
 };
 
-export default PostPage;
+export default DocPage;

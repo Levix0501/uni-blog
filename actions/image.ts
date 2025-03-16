@@ -21,3 +21,16 @@ export const uploadImageAction = async (formData: FormData) => {
 		return { error: '上传失败！' };
 	}
 };
+
+export const fetchRemoteImageBase64StrAction = async (url: string) => {
+	try {
+		const response = await fetch(url);
+		const arrayBuffer = await response.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
+		const base64Image = `data:${response.headers.get('content-type')};base64,${buffer.toString('base64')}`;
+		return base64Image;
+	} catch (error) {
+		console.error('获取远程图片失败:', error);
+		return null;
+	}
+};

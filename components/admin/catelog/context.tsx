@@ -5,7 +5,7 @@ import {
 	createDocumentAction,
 	getAllCatelogNodesAction,
 	updateAllCatelogNodesAction
-} from '@/actions/documents';
+} from '@/actions/document';
 import { DocumentModel } from '@prisma/client';
 import {
 	createContext,
@@ -86,7 +86,7 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 		getAllCatelogNodesAction()
 	);
 	const [draggableList, setDraggableList] = useState<DraggableNodeType[]>([]);
-	const currentDropNode = useRef<DraggableNodeType>();
+	const currentDropNode = useRef<DraggableNodeType>(void 0);
 	const [isCreating, setIsCreating] = useState(false);
 	const isDraggingExpandedGroup = useRef(false);
 
@@ -187,7 +187,8 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 					prevUuid,
 					siblingUuid,
 					title,
-					uuid
+					uuid,
+					slug
 				}) => {
 					nodes.push({
 						id,
@@ -199,7 +200,8 @@ export const CatelogProvider = ({ children }: CateglogProviderProps) => {
 						prevUuid,
 						siblingUuid,
 						title,
-						uuid
+						uuid,
+						slug
 					});
 				}
 			);

@@ -1,7 +1,7 @@
 import {
 	archiveDocumentAction,
 	getChildDocumentsAction
-} from '@/actions/documents';
+} from '@/actions/document';
 import { cn } from '@/lib/utils';
 import { DocumentModel } from '@prisma/client';
 import {

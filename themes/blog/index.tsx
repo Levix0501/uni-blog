@@ -1,5 +1,5 @@
 import HomeAsideWrapper from './components/home-aside-wrapper';
-import PostsPaginationResult from './components/posts-pagination-result';
+import PostsPaginationResult from './components/docs-pagination-result';
 
 const HomePage = () => {
 	return (

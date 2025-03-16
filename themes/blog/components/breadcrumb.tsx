@@ -7,7 +7,7 @@ import {
 	BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 
-const PostBreadcrumb = ({ title }: { title: string }) => {
+const DocBreadcrumb = ({ title }: { title: string }) => {
 	return (
 		<Breadcrumb className="mt-1.5">
 			<BreadcrumbList>
@@ -23,4 +23,4 @@ const PostBreadcrumb = ({ title }: { title: string }) => {
 	);
 };
 
-export default PostBreadcrumb;
+export default DocBreadcrumb;

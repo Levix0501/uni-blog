@@ -2,8 +2,8 @@
 
 import { Input, InputProps } from '@/components/ui/input';
 import { Editor, EditorProps } from '@bytemd/react';
-import { Post } from '@prisma/client';
-import { useState, useTransition } from 'react';
+import { DocumentModel, Post } from '@prisma/client';
+import { use, useEffect, useState, useTransition } from 'react';
 import { useDebounce, useLocalStorage } from 'react-use';
 import removeMd from 'remove-markdown';
 
@@ -33,26 +33,24 @@ const plugins = [
 ];
 
 export interface MDEditorProps {
-	post?: Post & { cover: ExtendedImageType | null };
+	document: DocumentModel & { cover: ExtendedImageType | null };
 }
 
-const MDEditor = ({ post }: MDEditorProps) => {
+const MDEditor = ({ document }: MDEditorProps) => {
 	const router = useRouter();
-	const [localValue, setLocalValue] = useLocalStorage('post-draft', '');
-	const [value, setValue] = useState(post?.content || localValue || '');
+	const [value, setValue] = useState(document.content);
 	const [, cancel] = useDebounce(
 		() => {
-			if (!post) {
-				setLocalValue(value);
-			}
-
-			form.setValue('content', value);
-			if (!post?.abstract) {
-				form.setValue(
-					'abstract',
-					removeMd(value).replace(/\n+/g, ' ').substring(0, 100)
-				);
-			}
+			// if (!post) {
+			// 	setLocalValue(value);
+			// }
+			// form.setValue('content', value);
+			// if (!post?.abstract) {
+			// 	form.setValue(
+			// 		'abstract',
+			// 		removeMd(value).replace(/\n+/g, ' ').substring(0, 100)
+			// 	);
+			// }
 		},
 		1000,
 		[value]
@@ -64,48 +62,52 @@ const MDEditor = ({ post }: MDEditorProps) => {
 		getAllPublishedCategoriesAction
 	);
 
-	const form = useForm<z.infer<typeof UpsertPostSchema>>({
-		resolver: zodResolver(UpsertPostSchema),
-		defaultValues: {
-			id: post?.id || void 0,
-			categoryId: post?.categoryId || '',
-			title: post?.title || '',
-			abstract: post?.abstract || '',
-			content: post?.content || '',
-			imageId: post?.imageId || '',
-			slug: post?.slug || '',
-			keywords: post?.keywords || '',
-			status: post?.status || 'published'
-		}
-	});
-	const [fileList, setFileList] = useState<UploadFile[]>(
-		post?.cover
-			? [
-					{
-						uid: post.cover.id,
-						name: `${post.cover.sign}.${post.cover.suffix}`,
-						status: 'done',
-						url: post.cover.imgUrl
-					}
-				]
-			: []
-	);
+	useEffect(() => {
+		setValue(document.content);
+	}, [document]);
 
-	const handleTitleChange: InputProps['onChange'] = (e) => {
-		form.setValue('title', e.currentTarget.value);
-	};
+	// const form = useForm<z.infer<typeof UpsertPostSchema>>({
+	// 	resolver: zodResolver(UpsertPostSchema),
+	// 	defaultValues: {
+	// 		id: post?.id || void 0,
+	// 		categoryId: post?.categoryId || '',
+	// 		title: post?.title || '',
+	// 		abstract: post?.abstract || '',
+	// 		content: post?.content || '',
+	// 		imageId: post?.imageId || '',
+	// 		slug: post?.slug || '',
+	// 		keywords: post?.keywords || '',
+	// 		status: post?.status || 'published'
+	// 	}
+	// });
+	// const [fileList, setFileList] = useState<UploadFile[]>(
+	// 	post?.cover
+	// 		? [
+	// 				{
+	// 					uid: post.cover.id,
+	// 					name: `${post.cover.sign}.${post.cover.suffix}`,
+	// 					status: 'done',
+	// 					url: post.cover.imgUrl
+	// 				}
+	// 			]
+	// 		: []
+	// );
 
-	const onSubmit = (values: UpsertPostType) => {
-		startTransition(() => {
-			upsertPostAction(values)
-				.then(() => {
-					router.replace('/admin/post');
-					toast.success(post ? '更新成功！' : '发布成功！');
-					setLocalValue('');
-				})
-				.catch(() => toast.error('Something went wrong!'));
-		});
-	};
+	// const handleTitleChange: InputProps['onChange'] = (e) => {
+	// 	form.setValue('title', e.currentTarget.value);
+	// };
+
+	// const onSubmit = (values: UpsertPostType) => {
+	// 	startTransition(() => {
+	// 		upsertPostAction(values)
+	// 			.then(() => {
+	// 				router.replace('/admin/post');
+	// 				toast.success(post ? '更新成功！' : '发布成功！');
+	// 				setLocalValue('');
+	// 			})
+	// 			.catch(() => toast.error('Something went wrong!'));
+	// 	});
+	// };
 
 	const uploadImages: EditorProps['uploadImages'] = async (files: File[]) => {
 		const result = await Promise.all(
@@ -126,36 +128,15 @@ const MDEditor = ({ post }: MDEditorProps) => {
 	};
 
 	return (
-		<Spin spinning={isPending}>
-			<header className="px-7 h-16 flex items-center">
-				<Input
-					placeholder="输入文章标题..."
-					className="!border-none !outline-none !ring-0 font-medium text-2xl h-full flex-1"
-					defaultValue={post?.title}
-					onChange={handleTitleChange}
-				/>
-				<PublishFormSheet
-					form={form}
-					categoryData={categoryData}
-					isLoadingCategories={isLoadingCategories}
-					fileList={fileList}
-					setFileList={setFileList}
-					onSubmit={onSubmit}
-					isUpdate={!!post}
-				/>
-			</header>
-			<div className="flex flex-col">
-				<Editor
-					value={value}
-					plugins={[]}
-					locale={zh_hans}
-					onChange={(v) => {
-						setValue(v);
-					}}
-					uploadImages={uploadImages}
-				/>
-			</div>
-		</Spin>
+		<Editor
+			value={value}
+			plugins={[]}
+			locale={zh_hans}
+			onChange={(v) => {
+				setValue(v);
+			}}
+			uploadImages={uploadImages}
+		/>
 	);
 };
 

@@ -16,27 +16,23 @@ datasource db {
 }
 
 model DocumentModel {
-  // 标识符
   id   Int    @id @default(autoincrement())
   uuid String @unique @default(cuid())
 
-  // 关系字段
   parentUuid  String?
   prevUuid    String?
   siblingUuid String?
   childUuid   String?
   level       Int
 
-  // 数据字段
   title        String
   content      String  @default("") @db.Text
   abstract     String  @default("") @db.Text
-  slug         String? @unique
-  keywords     String? @db.Text
+  slug         String  @unique @default(cuid())
+  keywords     String  @default("") @db.Text
   cover        Image?  @relation(fields: [coverImageId], references: [id])
   coverImageId String?
 
-  // 元数据字段
   isFolder    Boolean  @default(false)
   isPublished Boolean  @default(false)
   isArchived  Boolean  @default(false)

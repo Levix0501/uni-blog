@@ -22,6 +22,11 @@ const nextConfig = {
 				hostname: 'caddy'
 			}
 		]
+	},
+	experimental: {
+		serverActions: {
+			bodySizeLimit: '2mb'
+		}
 	}
 };
 

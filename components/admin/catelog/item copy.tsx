@@ -17,12 +17,11 @@ import {
 	Trash
 } from 'lucide-react';
 import { CSSProperties, useState } from 'react';
+import { DraggableNodeType, useCatelog } from './context';
 import { EditTitleForm } from './edit-title-form';
 import CreateDropdown from './create-dropdown';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { DraggableNodeType } from '@/hooks/use-catelog-store';
-import { useCatelogStore } from '@/hooks/use-catelog-store';
 // import { EditTitleForm } from './edit-title-form';
 
 export interface CatelogItemProps {
@@ -42,10 +41,7 @@ const CatelogItem = ({
 	const [isShowCreate, setIsShowCreate] = useState(false);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const router = useRouter();
-	const archiveDocument = useCatelogStore((state) => state.archiveDocument);
-	const toggleCollapsibleState = useCatelogStore(
-		(state) => state.toggleCollapsibleState
-	);
+	const { archiveDocument, toggleCollapsibleState } = useCatelog();
 
 	return (
 		<div

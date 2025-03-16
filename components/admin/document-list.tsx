@@ -1,6 +1,6 @@
 'use client';
 
-import { getChildDocumentsAction } from '@/actions/documents';
+import { getChildDocumentsAction } from '@/actions/document';
 import { DocumentModel } from '@prisma/client';
 import useSWR from 'swr';
 import { SidebarMenu, SidebarMenuSub } from '../ui/sidebar';

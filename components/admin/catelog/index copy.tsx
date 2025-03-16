@@ -1,8 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useSidebar } from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
 import {
 	DragDropContext,
 	Draggable,
@@ -17,16 +15,17 @@ import {
 } from '@hello-pangea/dnd';
 import { Spinner } from '@nextui-org/react';
 import { Plus } from 'lucide-react';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { FixedSizeList } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
-import { useCatelogStore } from '@/hooks/use-catelog-store';
 import CloneCatelogItem from './clone-item';
+import { CatelogProvider, useCatelog } from './context';
 import CreateDropdown from './create-dropdown';
 import CatelogItem from './item';
-import { useCatelogDataFetcher } from '@/hooks/use-catelog-data-fetcher';
-import { CatelogNodeType } from '@/actions/document';
-import { useDebouncedCallback } from 'use-debounce';
+import { useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
+
+interface CatelogProps {}
 
 const Row = ({ data: items, index, style }: any) => {
 	const item = items[index];
@@ -47,24 +46,11 @@ const Row = ({ data: items, index, style }: any) => {
 	);
 };
 
-const LoadingMask = () => {
-	const { isCreating } = useCatelogStore();
-
-	if (isCreating) {
-		return (
-			<div className="absolute top-0 left-0 w-full h-full bg-white/70 flex justify-center items-center z-[999]">
-				<Spinner size="sm" />
-			</div>
-		);
-	}
-
-	return null;
-};
-
-const Catelog = () => {
-	const { open, isMobile } = useSidebar();
+const CatelogInner = () => {
 	const ref = useRef<any>(undefined);
-	const { height = 0 } = useResizeObserver({ ref });
+	const { height = 0 } = useResizeObserver({
+		ref
+	});
 
 	const {
 		draggableList,
@@ -72,60 +58,8 @@ const Catelog = () => {
 		beforeDragStart,
 		dragStart,
 		dragUpdate,
-		dragEnd,
-		cache,
-		updateDraggableList,
-		updateCache,
-		updateCatelogData
-	} = useCatelogStore();
-
-	const { data, updateCatelogData } = useCatelogDataFetcher();
-
-	useEffect(() => {
-		if (data) {
-			updateCache(data);
-			updateDraggableList();
-		}
-	}, [data]);
-
-	const debouncedUpdateCatelogData = useDebouncedCallback(() => {
-		const nodes: CatelogNodeType[] = Array.from(cache.values()).map(
-			({
-				id,
-				childUuid,
-				isArchived,
-				isFolder,
-				level,
-				parentUuid,
-				prevUuid,
-				siblingUuid,
-				title,
-				uuid,
-				slug
-			}) => ({
-				id,
-				childUuid,
-				isArchived,
-				isFolder,
-				level,
-				parentUuid,
-				prevUuid,
-				siblingUuid,
-				title,
-				uuid,
-				slug
-			})
-		);
-		updateCatelogData(nodes);
-	}, 3000);
-
-	useEffect(() => {
-		const unsubscribe = useCatelogStore.subscribe((state) => {
-			state.updateCatelogData();
-		});
-
-		return () => unsubscribe();
-	}, [debouncedUpdateCatelogData]);
+		dragEnd
+	} = useCatelog();
 
 	const onBeforeDragStart = (start: DragStart) => {
 		beforeDragStart({
@@ -148,10 +82,11 @@ const Catelog = () => {
 
 	const onDragUpdate = (update: DragUpdate) => {
 		if (
-			isDraggingExpandedGroup &&
+			isDraggingExpandedGroup.current &&
 			update.destination &&
 			update.destination.index !== update.source.index
 		) {
+			isDraggingExpandedGroup.current = false;
 			return;
 		}
 
@@ -213,6 +148,66 @@ const Catelog = () => {
 	};
 
 	return (
+		<div className="w-full h-full" ref={ref}>
+			<DragDropContext
+				onBeforeDragStart={onBeforeDragStart}
+				onDragStart={onDragStart}
+				onDragUpdate={onDragUpdate}
+				onDragEnd={onDragEnd}
+			>
+				<Droppable
+					mode="virtual"
+					droppableId="catelog"
+					isCombineEnabled
+					renderClone={(
+						dragProvided: DraggableProvided,
+						dragSnapshot: DraggableStateSnapshot,
+						rubric: DraggableRubric
+					) => (
+						<CloneCatelogItem
+							dragProvided={dragProvided}
+							dragSnapshot={dragSnapshot}
+							item={draggableList[rubric.source.index]}
+						/>
+					)}
+				>
+					{(dropProvided: DroppableProvided) => (
+						<FixedSizeList
+							height={height}
+							itemCount={draggableList.length}
+							itemSize={36}
+							width={256}
+							outerRef={dropProvided.innerRef}
+							itemData={draggableList}
+						>
+							{Row}
+						</FixedSizeList>
+					)}
+				</Droppable>
+			</DragDropContext>
+		</div>
+	);
+};
+
+const LoadingMask = () => {
+	const { isCreating } = useCatelog();
+
+	if (isCreating) {
+		return (
+			<div className="absolute top-0 left-0 w-full h-full bg-white/70 flex justify-center items-center z-[999]">
+				<Spinner size="sm" />
+			</div>
+		);
+	}
+
+	return null;
+};
+
+const Catelog = () => {
+	const { open, isMobile } = useSidebar();
+
+	return (
+		// <CatelogProvider>
 		<div className="w-full h-full relative">
 			<LoadingMask />
 
@@ -229,47 +224,11 @@ const Catelog = () => {
 				</div>
 
 				<div className={cn('flex-1', !isMobile && !open && 'hidden')}>
-					<div className="w-full h-full" ref={ref}>
-						<DragDropContext
-							onBeforeDragStart={onBeforeDragStart}
-							onDragStart={onDragStart}
-							onDragUpdate={onDragUpdate}
-							onDragEnd={onDragEnd}
-						>
-							<Droppable
-								mode="virtual"
-								droppableId="catelog"
-								isCombineEnabled
-								renderClone={(
-									dragProvided: DraggableProvided,
-									dragSnapshot: DraggableStateSnapshot,
-									rubric: DraggableRubric
-								) => (
-									<CloneCatelogItem
-										dragProvided={dragProvided}
-										dragSnapshot={dragSnapshot}
-										item={draggableList[rubric.source.index]}
-									/>
-								)}
-							>
-								{(dropProvided: DroppableProvided) => (
-									<FixedSizeList
-										height={height}
-										itemCount={draggableList.length}
-										itemSize={36}
-										width={256}
-										outerRef={dropProvided.innerRef}
-										itemData={draggableList}
-									>
-										{Row}
-									</FixedSizeList>
-								)}
-							</Droppable>
-						</DragDropContext>
-					</div>
+					<CatelogInner />
 				</div>
 			</div>
 		</div>
+		// </CatelogProvider>
 	);
 };
 
